@@ -719,12 +719,12 @@ function saveNewTask(){
   saveDB();closeModal();renderToday();
 }
 
-// ============ تعديل/حذف مهمة نشطة ============
+// ============ تعديل/حذف مهمة (نشطة أو منتهية) ============
 let editingTask=null;
 function openEditTask(opday,id){
   const t=findTask(opday,id);
   if(!t)return;
-  editingTask={opday,id};
+  editingTask={opday,id,fromArchive:false};
   let opts=GROUPS().map(g=>`<option value="${g.id}"${g.id===t.grp?' selected':''}>${esc(g.name)}</option>`).join('');
   document.getElementById('modal-title').textContent='تعديل المهمة';
   document.getElementById('modal-body').innerHTML=`
@@ -743,18 +743,30 @@ function saveEditTask(){
   if(!name){alert('اكتب اسم المهمة');return;}
   t.name=name;
   t.grp=document.getElementById('et-grp').value;
-  saveDB();closeModal();renderToday();
+  // الحقول دي موجودة بس في فورم الأرشيف (openEditArchivedTask)
+  const statusEl=document.getElementById('et-status');
+  const durEl=document.getElementById('et-duration');
+  if(statusEl)t.status=statusEl.value;
+  if(durEl){
+    const dur=parseInt(durEl.value,10);
+    t.durationMin=isNaN(dur)||dur<0?0:dur;
+  }
+  saveDB();closeModal();
+  if(editingTask.fromArchive)renderArchive();else renderToday();
 }
 function deleteActiveTask(){
   if(!confirm('متأكد من حذف المهمة؟ لو فيها وقت مسجّل أو مؤقت شغال، هيتم إيقافه أولاً.'))return;
-  const{opday,id}=editingTask;
+  const{opday,id,fromArchive}=editingTask;
   // لو المؤقت شغال على نفس المهمة، لازم نوقفه ونحفظ التسجيلة في السجل قبل الحذف
   // (نفس المنطق المتبع في taskComplete)، عشان الوقت المسجّل لغاية دلوقتي ميضيعش من السجل.
+  // ملاحظة: المهام المؤرشفة (منتهية) لا يكون لها مؤقت شغال أصلاً بحكم حالتها، فالفحص هنا آمن للحالتين.
   if(timer&&timer.taskId===id){
     timerStopInternal(opday);
   }
   deleteTaskPermanently(opday,id);
-  closeModal();renderToday();renderLog();
+  closeModal();
+  if(fromArchive)renderArchive();else renderToday();
+  renderLog();
 }
 
 // ============ القوالب (Templates) ============
@@ -905,12 +917,12 @@ function renderArchive(){
     const color=t.status==='done'?'var(--teal)':'var(--coral)';
     return`<div class="arc-row">
       <div class="arc-dot" style="background:${color}"></div>
-      <div class="arc-main">
+      <div class="arc-main" style="cursor:pointer" onclick="openEditArchivedTask('${t.opday}','${t.id}')">
         <div class="arc-name">${esc(t.name)}</div>
         <div class="arc-sub">${g?esc(g.name):''} · ${esc(t.hijriDisplay||'')}${t.durationMin?' · '+fmtDur(t.durationMin):''}</div>
       </div>
       <span class="badge ${t.status==='done'?'badge-teal':'badge-coral'}">${t.status==='done'?'منجزة':'غير منجزة'}</span>
-      <button class="arc-del" onclick="archiveDelete('${t.opday}','${t.id}')"><i class="ti ti-trash"></i></button>
+      <button class="arc-del" onclick="event.stopPropagation();archiveDelete('${t.opday}','${t.id}')"><i class="ti ti-trash"></i></button>
     </div>`;
   }).join('');
 }
@@ -918,6 +930,30 @@ function archiveDelete(opday,id){
   if(!confirm('حذف المهمة نهائياً من الأرشيف؟'))return;
   deleteTaskPermanently(opday,id);
   renderArchive();
+}
+// ============ تعديل مهمة منتهية (من الأرشيف) ============
+function openEditArchivedTask(opday,id){
+  const t=findTask(opday,id);
+  if(!t)return;
+  editingTask={opday,id,fromArchive:true};
+  let opts=GROUPS().map(g=>`<option value="${g.id}"${g.id===t.grp?' selected':''}>${esc(g.name)}</option>`).join('');
+  document.getElementById('modal-title').textContent='تعديل مهمة من الأرشيف';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="field"><label>المجال</label><select id="et-grp">${opts}</select></div>
+    <div class="field"><label>اسم المهمة</label><input type="text" id="et-name" value="${esc(t.name)}" placeholder="مثال: مراجعة الحفظ"></div>
+    <div class="field">
+      <label>الحالة</label>
+      <select id="et-status">
+        <option value="done"${t.status==='done'?' selected':''}>✓ منجزة</option>
+        <option value="failed"${t.status==='failed'?' selected':''}>✗ غير منجزة</option>
+      </select>
+    </div>
+    <div class="field"><label>المدة المسجّلة (بالدقايق)</label><input type="number" id="et-duration" min="0" value="${t.durationMin||0}"></div>
+    <button class="btn btn-primary" onclick="saveEditTask()"><i class="ti ti-check"></i> حفظ التعديل</button>
+    <button class="btn btn-danger" style="width:100%;margin-top:8px" onclick="deleteActiveTask()"><i class="ti ti-trash"></i> حذف المهمة نهائيًا</button>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('et-name').focus(),50);
 }
 
 // ============ السجل — عرض الفترات (بدون تغيير جوهري) ============
