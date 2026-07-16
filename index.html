@@ -166,7 +166,7 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
 .cal-hour-line{position:absolute;left:0;right:0;border-top:.5px solid var(--border)}
 .cal-now-line{position:absolute;left:0;right:0;height:2px;background:var(--coral);z-index:5}
 .cal-now-line::before{content:'';position:absolute;right:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--coral)}
-.cal-block{position:absolute;left:2px;right:4px;border-radius:6px;padding:3px 7px;overflow:hidden;cursor:pointer;color:#fff}
+.cal-block{position:absolute;border-radius:6px;padding:3px 7px;overflow:hidden;cursor:pointer;color:#fff;box-sizing:border-box}
 .cal-block-title{font-size:11.5px;font-weight:600;line-height:1.25;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .cal-block-time{font-size:9.5px;opacity:.85;margin-top:1px}
 .cal-empty-slot{position:absolute;left:2px;right:4px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--teal);cursor:pointer;font-size:13px;font-weight:600;background:rgba(0,0,0,0.01)}
@@ -916,14 +916,51 @@ function renderPeriodTimeline(opday,isToday,currentPid){
 
   const logs=getDay(opday).logs.filter(l=>getPeriod(l.start)===activePeriodId).sort((a,b)=>timeToMin(a.start)-timeToMin(b.start));
   let maxBottom=0,totalMin=0,blocks='';
-  logs.forEach(l=>{
+
+  // ============ حساب تخطيط الأعمدة للجلسات المتداخلة زمنيًا (زي Google Calendar) ============
+  // نحسب مدى كل جلسة بالدقايق (مع مراعاة عبور منتصف الليل)، ونجمع الجلسات في "كتل تداخل" متصلة،
+  // ثم نوزع كل كتلة على أقل عدد أعمدة ممكن بحيث محدش يتراكب فوق التاني.
+  const spans=logs.map(l=>{
+    let s=timeToMin(l.start);if(s<startMin)s+=1440;
+    let e=timeToMin(l.end);if(e<=s)e+=1440;
+    return{log:l,s,e,col:0,cols:1};
+  });
+  let cluster=[];
+  function flushCluster(){
+    if(!cluster.length)return;
+    const columnsEnd=[]; // آخر وقت انتهاء مستخدم في كل عمود
+    cluster.forEach(item=>{
+      let placed=false;
+      for(let c=0;c<columnsEnd.length;c++){
+        if(item.s>=columnsEnd[c]){item.col=c;columnsEnd[c]=item.e;placed=true;break;}
+      }
+      if(!placed){item.col=columnsEnd.length;columnsEnd.push(item.e);}
+    });
+    const totalCols=columnsEnd.length;
+    cluster.forEach(item=>item.cols=totalCols);
+    cluster=[];
+  }
+  let clusterEnd=-1;
+  spans.forEach(item=>{
+    if(cluster.length&&item.s>=clusterEnd){flushCluster();}
+    cluster.push(item);
+    clusterEnd=Math.max(clusterEnd===-1?0:clusterEnd,item.e);
+  });
+  flushCluster();
+
+  spans.forEach(({log:l,s,e,col,cols})=>{
     const y=toY(l.start);
     const h=Math.max(26,toY(l.end)-y);
     maxBottom=Math.max(maxBottom,y+h);
     totalMin+=logDur(l);
-    blocks+=`<div class="cal-block" style="top:${y}px;height:${h}px;background:${blockColor(l)}" onclick="openLogForm('${opday}',${JSON.stringify(l.id)})">
+    // نقسم العرض المتاح (بعد خصم 2px يمين و4px شمال زي الهامش القديم) بالتساوي بين الأعمدة،
+    // مع فراغ صغير 3px بين كل عمود والتاني
+    const gap=3;
+    const widthCalc=`(100% - 6px - ${(cols-1)*gap}px) / ${cols}`;
+    const leftCalc=`2px + (${widthCalc} + ${gap}px) * ${col}`;
+    blocks+=`<div class="cal-block" style="top:${y}px;height:${h}px;left:calc(${leftCalc});width:calc(${widthCalc});background:${blockColor(l)}" onclick="openLogForm('${opday}',${JSON.stringify(l.id)})">
       <div class="cal-block-title">${esc(l.label)}</div>
-      <div class="cal-block-time">${fmt12(l.start)}–${fmt12(l.end)} · ${fmtDur(logDur(l))}</div>
+      <div class="cal-block-time">${fmt12(l.start)}–${fmt12(l.end)}${cols===1?' · '+fmtDur(logDur(l)):''}</div>
     </div>`;
   });
   document.getElementById('log-timeline').innerHTML=`
