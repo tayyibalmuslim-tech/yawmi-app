@@ -212,6 +212,31 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
 .auth-submit{width:100%;background:var(--teal);color:#fff;border:none;border-radius:11px;padding:12px;font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:4px}
 .auth-submit:disabled{opacity:.6;cursor:wait}
 .auth-forgot{display:block;width:100%;background:none;border:none;color:var(--text-sec);font-family:inherit;font-size:12px;text-align:center;margin-top:12px;cursor:pointer;text-decoration:underline}
+
+/* ============ نظام الشرح التفاعلي (Onboarding) ============ */
+.ob-welcome{position:fixed;inset:0;background:var(--bg);z-index:300;display:none;align-items:center;justify-content:center;padding:24px}
+.ob-welcome.open{display:flex}
+.ob-welcome-card{max-width:400px;text-align:center}
+.ob-welcome-icon{font-size:52px;color:var(--teal);margin-bottom:14px}
+.ob-welcome-title{font-size:24px;font-weight:800;margin-bottom:14px}
+.ob-welcome-text{font-size:14.5px;color:var(--text-sec);line-height:1.9;margin-bottom:26px}
+.ob-welcome-btn{background:var(--teal);color:#fff;border:none;border-radius:12px;padding:14px 20px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;width:100%}
+
+.ob-overlay{position:fixed;inset:0;z-index:290;display:none;pointer-events:none}
+.ob-overlay.open{display:block}
+.ob-dim{position:absolute;inset:0;background:rgba(0,0,0,.55);pointer-events:auto;transition:background .2s}
+.ob-hole{position:absolute;border-radius:14px;box-shadow:0 0 0 9999px rgba(0,0,0,.55);transition:all .25s ease;pointer-events:none;border:2px solid var(--teal)}
+.ob-card{position:absolute;background:var(--card);border-radius:14px;padding:16px;width:min(320px,86vw);box-shadow:0 8px 30px rgba(0,0,0,.25);pointer-events:auto;transition:top .25s ease,left .25s ease}
+.ob-card-step{font-size:10.5px;font-weight:700;color:var(--teal);margin-bottom:6px}
+.ob-card-title{font-size:15.5px;font-weight:800;margin-bottom:6px}
+.ob-card-text{font-size:13px;color:var(--text-sec);line-height:1.75;margin-bottom:14px}
+.ob-card-actions{display:flex;gap:8px;align-items:center}
+.ob-card-skip{background:none;border:none;color:var(--text-hint);font-family:inherit;font-size:12px;cursor:pointer;padding:8px 4px;text-decoration:underline}
+.ob-card-nav{flex:1;display:flex;gap:8px;justify-content:flex-end}
+.ob-card-nav button{border:none;border-radius:9px;padding:9px 16px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.ob-btn-prev{background:var(--gray-light);color:var(--text)}
+.ob-btn-next{background:var(--teal);color:#fff}
+.ob-arrow{position:absolute;width:14px;height:14px;background:var(--card);transform:rotate(45deg);pointer-events:none}
 </style>
 </head>
 <body>
@@ -255,6 +280,7 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
     </div>
     <div class="h-left">
       <button class="h-btn" id="sync-btn" onclick="openSettings()"><i class="ti ti-cloud-off" id="sync-icon"></i><span>إعدادات</span></button>
+      <!-- ob-settings-btn يشير لنفس sync-btn، مُستخدم كمرجع في نظام الشرح التفاعلي -->
       <div>
         <div class="clock-num" id="clock">--:--</div>
         <div class="clock-period" id="clock-period"></div>
@@ -288,7 +314,7 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
 
   <!-- الأرشيف -->
   <div class="screen" id="screen-archive">
-    <div class="card">
+    <div class="card" id="ob-archive-card">
       <div class="sec-title"><i class="ti ti-archive"></i> الأرشيف</div>
       <div id="archive-list"></div>
     </div>
@@ -322,11 +348,45 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
   </div>
 </div>
 
-<div class="bottom-nav">
-  <button class="nav-btn active" onclick="showTab('today',this)"><i class="ti ti-sun"></i> اليوم</button>
-  <button class="nav-btn" onclick="showTab('log',this)"><i class="ti ti-clock-edit"></i> السجل</button>
-  <button class="nav-btn" onclick="showTab('archive',this)"><i class="ti ti-archive"></i> الأرشيف</button>
-  <button class="nav-btn" onclick="showTab('week',this)"><i class="ti ti-chart-bar"></i> الأسبوع</button>
+<!-- ============ شاشة الترحيب (بداية الشرح التفاعلي) ============ -->
+<div class="ob-welcome" id="ob-welcome">
+  <div class="ob-welcome-card">
+    <div class="ob-welcome-icon"><i class="ti ti-sparkles"></i></div>
+    <div class="ob-welcome-title">أنت جاهز الآن</div>
+    <div class="ob-welcome-text">
+      هذا التطبيق صُمم ليكون بسيطًا، لذلك لا تحاول استخدام جميع المزايا في أول يوم.<br><br>
+      ابدأ بإضافة المهام التي تريد إنجازها اليوم فقط.<br><br>
+      ومع مرور الأيام ستصبح Templates والمزامنة وبقية المزايا جزءًا طبيعيًا من استخدامك اليومي.<br><br>
+      ولا تحاول إنهاء كل شيء دفعة واحدة. اختر المهمة التالية وابدأ بها، ومع مرور الأيام سيصبح الإنجاز عادة.
+    </div>
+    <button class="ob-welcome-btn" onclick="obWelcomeStart()">ابدأ استخدام التطبيق</button>
+  </div>
+</div>
+
+<!-- ============ طبقة الشرح التفاعلي (تظليل + كارد + سهم) ============ -->
+<div class="ob-overlay" id="ob-overlay">
+  <div class="ob-dim" id="ob-dim" onclick="obNext()"></div>
+  <div class="ob-hole" id="ob-hole"></div>
+  <div class="ob-arrow" id="ob-arrow"></div>
+  <div class="ob-card" id="ob-card">
+    <div class="ob-card-step" id="ob-card-step"></div>
+    <div class="ob-card-title" id="ob-card-title"></div>
+    <div class="ob-card-text" id="ob-card-text"></div>
+    <div class="ob-card-actions">
+      <button class="ob-card-skip" onclick="obSkip()">تخطي الشرح</button>
+      <div class="ob-card-nav">
+        <button class="ob-btn-prev" id="ob-btn-prev" onclick="obPrev()">السابق</button>
+        <button class="ob-btn-next" id="ob-btn-next" onclick="obNext()">التالي</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav" id="ob-bottom-nav">
+  <button class="nav-btn active" id="ob-nav-today" onclick="showTab('today',this)"><i class="ti ti-sun"></i> اليوم</button>
+  <button class="nav-btn" id="ob-nav-log" onclick="showTab('log',this)"><i class="ti ti-clock-edit"></i> السجل</button>
+  <button class="nav-btn" id="ob-nav-archive" onclick="showTab('archive',this)"><i class="ti ti-archive"></i> الأرشيف</button>
+  <button class="nav-btn" id="ob-nav-week" onclick="showTab('week',this)"><i class="ti ti-chart-bar"></i> الأسبوع</button>
 </div>
 
 <script>
@@ -536,13 +596,13 @@ function renderToday(){
   document.getElementById('st-pct').textContent=(total?Math.round(doneCount/total*100):0)+'%';
 
   // أزرار أعلى الشاشة: إضافة مهمة + إنشاء اليوم من قالب
-  let actionsHtml=`<button class="btn" style="flex:1" onclick="openAddTask()"><i class="ti ti-plus"></i> مهمة</button>`;
+  let actionsHtml=`<button class="btn" id="ob-add-task-btn" style="flex:1" onclick="openAddTask()"><i class="ti ti-plus"></i> مهمة</button>`;
   if(db.templates.length===1){
-    actionsHtml+=`<button class="btn btn-primary" style="flex:1" onclick="applyTemplate('${db.templates[0].id}')"><i class="ti ti-playlist-add"></i> ابدأ اليوم</button>`;
+    actionsHtml+=`<button class="btn btn-primary" id="ob-template-btn" style="flex:1" onclick="applyTemplate('${db.templates[0].id}')"><i class="ti ti-playlist-add"></i> ابدأ اليوم</button>`;
   }else if(db.templates.length>1){
-    actionsHtml+=`<button class="btn btn-primary" style="flex:1" onclick="openTemplatePicker()"><i class="ti ti-playlist-add"></i> ابدأ اليوم</button>`;
+    actionsHtml+=`<button class="btn btn-primary" id="ob-template-btn" style="flex:1" onclick="openTemplatePicker()"><i class="ti ti-playlist-add"></i> ابدأ اليوم</button>`;
   }else{
-    actionsHtml+=`<button class="btn" style="flex:1" onclick="openTemplateManager()"><i class="ti ti-template"></i> أنشئ قالب</button>`;
+    actionsHtml+=`<button class="btn" id="ob-template-btn" style="flex:1" onclick="openTemplateManager()"><i class="ti ti-template"></i> أنشئ قالب</button>`;
   }
   document.getElementById('today-actions').innerHTML=actionsHtml;
 
@@ -556,23 +616,25 @@ function renderToday(){
     return;
   }
 
-  let html='';
-  GROUPS().forEach(g=>{
+  let html='';let firstTaskDone=false;
+  GROUPS().forEach((g,gIdx)=>{
     const gTasks=acts.filter(t=>t.grp===g.id);
     if(!gTasks.length)return;
-    html+=`<div class="card"><div class="sec-title"><i class="ti ${g.icon}" style="color:${g.color}"></i> ${esc(g.name)}</div>`;
+    html+=`<div class="card"${!firstTaskDone?' id="ob-group-card"':''}><div class="sec-title"${gIdx===0?' id="ob-groups-title"':''}><i class="ti ${g.icon}" style="color:${g.color}"></i> ${esc(g.name)}</div>`;
     gTasks.forEach(t=>{
       const running=timer&&timer.taskId===t.id;
       const elapsed=t.startedAt?Math.round((Date.now()-t.startedAt)/60000):0;
-      html+=`<div class="task-row">
+      const isFirst=!firstTaskDone;
+      if(isFirst)firstTaskDone=true;
+      html+=`<div class="task-row"${isFirst?' id="ob-task-card"':''}>
         <div class="t-main">
           <div class="t-name">${esc(t.name)}</div>
           ${t.startedAt?`<div class="t-sub">${running?'شغال دلوقتي':'اتسجل: '+fmtDur(elapsed)}</div>`:''}
         </div>
         <div class="t-actions">
-          <button class="t-play ${running?'running':''}" onclick="${running?'timerStop()':`timerStart('${t.id}')`}"><i class="ti ${running?'ti-player-stop-filled':'ti-player-play-filled'}"></i>${running?'إيقاف':'ابدأ'}</button>
-          <button class="t-done-btn" onclick="taskComplete('${opday}','${t.id}','done')" title="تم">✓</button>
-          <button class="t-fail-btn" onclick="taskComplete('${opday}','${t.id}','failed')" title="لم أنجز">✗</button>
+          <button class="t-play ${running?'running':''}"${isFirst?' id="ob-start-btn"':''} onclick="${running?'timerStop()':`timerStart('${t.id}')`}"><i class="ti ${running?'ti-player-stop-filled':'ti-player-play-filled'}"></i>${running?'إيقاف':'ابدأ'}</button>
+          <button class="t-done-btn"${isFirst?' id="ob-done-btn"':''} onclick="taskComplete('${opday}','${t.id}','done')" title="تم">✓</button>
+          <button class="t-fail-btn"${isFirst?' id="ob-fail-btn"':''} onclick="taskComplete('${opday}','${t.id}','failed')" title="لم أنجز">✗</button>
         </div>
       </div>`;
     });
@@ -1134,6 +1196,8 @@ function openSettings(){
       <div><label>كود الدولة</label><input type="text" id="set-country" value="${esc(db.settings.country)}" placeholder="EG"></div>
     </div>
     <button class="btn btn-sm" style="width:100%;margin-bottom:14px" onclick="applyCity()"><i class="ti ti-refresh"></i> حفظ وتحديث المواقيت</button>
+    <div class="sec-title"><i class="ti ti-help-circle"></i> المساعدة</div>
+    <button class="btn btn-sm" style="width:100%;margin-bottom:14px" onclick="closeModal();obStart();"><i class="ti ti-replay"></i> إعادة مشاهدة الشرح</button>
     <div class="sec-title"><i class="ti ti-user-circle"></i> الحساب والمزامنة</div>
     <div class="text-muted" style="margin-bottom:10px">مسجّل دخول بـ: <b dir="ltr">${esc(currentUser?currentUser.email:'—')}</b><br>بياناتك بتتزامن تلقائيًا على كل جهاز تسجّل دخولك عليه بنفس الحساب.</div>
     <button class="btn btn-sm" style="width:100%;margin-bottom:8px" onclick="exportData()"><i class="ti ti-download"></i> تنزيل نسخة من بياناتي (JSON)</button>
@@ -1331,6 +1395,138 @@ function showAuthScreen(show){
   document.getElementById('auth-screen').classList.toggle('open',show);
 }
 
+// ============ نظام الشرح التفاعلي (Onboarding) ============
+// كل خطوة: targetId (عنصر نظلل عليه)، tab (الشاشة اللي نفتحها قبل الخطوة أو null)،
+// title/text (محتوى الشرح)، action (دالة اختيارية تتنفذ قبل عرض الخطوة، زي فتح مودال)
+const OB_STEPS=[
+  {targetId:'ob-add-task-btn',tab:'today',title:'زر إضافة مهمة',
+    text:'استخدم هذا الزر لإنشاء مهمة جديدة لليوم الحالي. المهمة تنتمي إلى أحد المجالات، ويتم تسجيل تاريخ إنشائها تلقائيًا مع إمكانية تعديله لاحقًا.'},
+  {targetId:'ob-groups-title',tab:'today',title:'المجالات',
+    text:'المجالات تُستخدم لتنظيم المهام فقط، ولا تؤثر على ترتيب التنفيذ. يمكنك إنشاء أي عدد من المجالات بما يناسب حياتك (من الإعدادات).',
+    fallback:{title:'المجالات',text:'المجالات تُستخدم لتنظيم المهام فقط، ولا تؤثر على ترتيب التنفيذ. يمكنك إنشاء أي عدد من المجالات بما يناسب حياتك (من الإعدادات). لو أضفت مهمة، هتظهر هنا تحت مجالها.'}},
+  {targetId:'ob-task-card',tab:'today',title:'بطاقة المهمة',
+    text:'كل بطاقة مهمة تعرض: اسم المهمة، المجال، تاريخ الإنشاء، وقت البدء، وقت الانتهاء، ومدة التنفيذ إذا كانت موجودة.',
+    fallback:{title:'بطاقة المهمة',text:'كل بطاقة مهمة تعرض: اسم المهمة، المجال، تاريخ الإنشاء، وقت البدء، وقت الانتهاء، ومدة التنفيذ إذا كانت موجودة. أضف مهمة الآن عشان تشوف شكلها.'}},
+  {targetId:'ob-start-btn',tab:'today',title:'زر بدء المهمة',
+    text:'الضغط على «ابدأ» يسجل وقت بداية التنفيذ، ولا يجبرك على إنهاء المهمة مباشرة — تقدر توقفها وترجعلها أي وقت.',
+    fallback:{title:'زر بدء المهمة',text:'الضغط على «ابدأ» يسجل وقت بداية التنفيذ، ولا يجبرك على إنهاء المهمة مباشرة — تقدر توقفها وترجعلها أي وقت. هيظهر جنب كل مهمة تضيفها.'}},
+  {targetId:'ob-done-btn',tab:'today',title:'زر تم الإنجاز',
+    text:'الضغط عليه ينقل المهمة مباشرة إلى قسم المهام المنتهية مع تسجيل وقت الانتهاء تلقائيًا.',
+    fallback:{title:'زر تم الإنجاز',text:'الضغط عليه ينقل المهمة مباشرة إلى قسم المهام المنتهية مع تسجيل وقت الانتهاء تلقائيًا.'}},
+  {targetId:'ob-fail-btn',tab:'today',title:'زر لم يتم الإنجاز',
+    text:'استخدم هذا الخيار عندما تقرر عدم إكمال المهمة في هذا اليوم. تُحفظ داخل المهام المنتهية ومميزة باللون الأحمر حتى تقدر تراجعها لاحقًا.',
+    fallback:{title:'زر لم يتم الإنجاز',text:'استخدم هذا الخيار عندما تقرر عدم إكمال المهمة في هذا اليوم. تُحفظ داخل المهام المنتهية ومميزة باللون الأحمر حتى تقدر تراجعها لاحقًا.'}},
+  {targetId:'ob-nav-archive',tab:'today',title:'قسم المهام المنتهية (الأرشيف)',
+    text:'هذا القسم يمثل سجل كل أيامك. من خلاله تقدر تراجع: المهام المنجزة، المهام غير المنجزة، أوقات التنفيذ، ومدة كل مهمة.'},
+  {targetId:'ob-template-btn',tab:'today',title:'Templates (القوالب)',
+    text:'من هنا تقدر: تنشئ Template جديد، تعدّله، تحذفه، أو تستخدمه لإنشاء يوم كامل بضغطة واحدة. Templates توفر وقتك لأنها تمنع إعادة كتابة نفس المهام كل يوم.'},
+  {targetId:'sync-btn',tab:'today',title:'الإعدادات',
+    text:'من هنا تقدر تتحكم في: المجالات، إدارة Templates، مواقيت الصلاة، إعادة مشاهدة هذا الشرح، وتسجيل الخروج.'},
+  {targetId:'sync-btn',tab:'today',title:'المزامنة',
+    text:'التطبيق يحفظ بياناتك تلقائيًا داخل حسابك — مفيش زرار «حفظ» تحتاج تدوس عليه. تقدر تفتح التطبيق من أي جهاز بعد ما تسجل دخول بنفس الحساب، وهتلاقي بياناتك موجودة.'},
+  {targetId:'h-hijri',tab:'today',title:'التقويم الهجري',
+    text:'اليوم داخل التطبيق يعتمد على التاريخ الهجري، وينتقل تلقائيًا بعد أذان المغرب — من غير ما تحتاج تغيّر التاريخ يدويًا.'}
+];
+let obIdx=0;
+
+function obShouldShowOnboarding(){
+  return !localStorage.getItem('yawmi_ob_seen_'+(currentUser?currentUser.uid:'anon'));
+}
+function obMarkSeen(){
+  localStorage.setItem('yawmi_ob_seen_'+(currentUser?currentUser.uid:'anon'),'1');
+}
+// نقطة البداية العامة: تُستدعى تلقائيًا أول مرة، أو يدويًا من زر «إعادة مشاهدة الشرح»
+function obStart(){
+  document.getElementById('ob-welcome').classList.add('open');
+}
+function obWelcomeStart(){
+  document.getElementById('ob-welcome').classList.remove('open');
+  obMarkSeen();
+  obIdx=0;
+  // نرجع دايمًا لشاشة اليوم في بداية الشرح عشان الترتيب يبقى متوقع
+  const todayBtn=document.getElementById('ob-nav-today');
+  if(todayBtn)showTab('today',todayBtn);
+  setTimeout(obShowStep,120);
+}
+function obSkip(){
+  document.getElementById('ob-overlay').classList.remove('open');
+  obMarkSeen();
+}
+function obNext(){
+  if(obIdx>=OB_STEPS.length-1){obSkip();return;}
+  obIdx++;
+  obShowStep();
+}
+function obPrev(){
+  if(obIdx<=0)return;
+  obIdx--;
+  obShowStep();
+}
+function obShowStep(){
+  const step=OB_STEPS[obIdx];
+  if(!step){obSkip();return;}
+  // افتح الشاشة (تبويب) المطلوبة للخطوة لو مش مفتوحة أصلًا
+  if(step.tab){
+    const navBtn=document.getElementById('ob-nav-'+step.tab);
+    const scr=document.getElementById('screen-'+step.tab);
+    if(scr&&!scr.classList.contains('active')&&navBtn)showTab(step.tab,navBtn);
+  }
+  requestAnimationFrame(()=>requestAnimationFrame(obPositionStep));
+}
+function obPositionStep(){
+  const step=OB_STEPS[obIdx];
+  let target=document.getElementById(step.targetId);
+  let content=step;
+  // لو العنصر الأساسي مش موجود (زي بطاقة مهمة لسه ملهاش وجود)، استخدم نص بديل واستهدف مكان قريب منطقيًا
+  if(!target){
+    content=step.fallback||step;
+    target=document.getElementById('today-lists')||document.getElementById('ob-add-task-btn')||document.body;
+  }
+  const overlay=document.getElementById('ob-overlay');
+  overlay.classList.add('open');
+  const rect=target.getBoundingClientRect();
+  const pad=6;
+  const hole=document.getElementById('ob-hole');
+  hole.style.top=Math.max(4,rect.top-pad)+'px';
+  hole.style.left=Math.max(4,rect.left-pad)+'px';
+  hole.style.width=(rect.width+pad*2)+'px';
+  hole.style.height=(rect.height+pad*2)+'px';
+
+  document.getElementById('ob-card-step').textContent='خطوة '+(obIdx+1)+' من '+OB_STEPS.length;
+  document.getElementById('ob-card-title').textContent=content.title;
+  document.getElementById('ob-card-text').textContent=content.text;
+  document.getElementById('ob-btn-prev').style.visibility=obIdx===0?'hidden':'visible';
+  document.getElementById('ob-btn-next').textContent=obIdx===OB_STEPS.length-1?'إنهاء':'التالي';
+
+  // نضع الكارد أسفل العنصر لو فيه مساحة، وإلا فوقه
+  const card=document.getElementById('ob-card');
+  const arrow=document.getElementById('ob-arrow');
+  const cardW=Math.min(320,window.innerWidth*.86);
+  let cardLeft=rect.left+rect.width/2-cardW/2;
+  cardLeft=Math.max(10,Math.min(cardLeft,window.innerWidth-cardW-10));
+  const spaceBelow=window.innerHeight-rect.bottom;
+  const showBelow=spaceBelow>220||rect.top<220;
+  let cardTop=showBelow?rect.bottom+18:rect.top-18;
+  card.style.left=cardLeft+'px';
+  card.style.visibility='hidden'; // نقيس الارتفاع الحقيقي أولاً
+  card.style.top='0px';
+  requestAnimationFrame(()=>{
+    const cardH=card.offsetHeight;
+    let finalTop=showBelow?rect.bottom+18:(rect.top-18-cardH);
+    finalTop=Math.max(10,Math.min(finalTop,window.innerHeight-cardH-10));
+    card.style.top=finalTop+'px';
+    card.style.visibility='visible';
+    const arrowX=Math.max(rect.left+rect.width/2,cardLeft+20);
+    arrow.style.left=(Math.min(arrowX,cardLeft+cardW-20)-7)+'px';
+    if(showBelow){arrow.style.top=(finalTop-7)+'px';}
+    else{arrow.style.top=(finalTop+cardH-7)+'px';}
+  });
+}
+// إعادة ضبط موضع الخطوة الحالية عند تغيير حجم الشاشة (دوران الجوال مثلاً)
+window.addEventListener('resize',()=>{
+  if(document.getElementById('ob-overlay').classList.contains('open'))obPositionStep();
+});
+
 // ============ البداية ============
 // التطبيق لا يبدأ إلا بعد التأكد من تسجيل الدخول
 let clockStarted=false;
@@ -1354,6 +1550,7 @@ async function startApp(){
   renderToday();renderLog();renderWeek();renderArchive();
   scheduleMaghribTransition();
   startSyncListener();
+  if(obShouldShowOnboarding())setTimeout(obStart,500);
 }
 if(firebaseAuth){
   // نقطة الدخول الوحيدة: الجلسة محفوظة (Persistence) فلن يُطلب الدخول في كل مرة
