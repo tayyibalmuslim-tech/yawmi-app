@@ -100,6 +100,9 @@ body{font-family:'Tajawal',-apple-system,"Segoe UI",sans-serif;background:var(--
 .t-main{flex:1;min-width:0}
 .t-name{font-size:14px;font-weight:600}
 .t-sub{font-size:11px;color:var(--text-sec);margin-top:2px}
+.t-period-badge{display:inline-flex;align-items:center;gap:3px;background:var(--gray-light);color:var(--text-sec);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;cursor:pointer;white-space:nowrap}
+.t-period-badge:active{opacity:.7}
+.t-period-badge.no-period{background:var(--amber-light);color:var(--amber-text)}
 .t-actions{display:flex;align-items:center;gap:5px;flex-shrink:0}
 .t-play{height:30px;border:none;border-radius:8px;background:var(--teal-light);color:var(--teal-text);cursor:pointer;display:flex;align-items:center;gap:4px;flex-shrink:0;padding:0 9px;font-family:inherit;font-size:11px;font-weight:700}
 .t-play i{font-size:14px}
@@ -395,6 +398,13 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
 const SCHEMA_VERSION=2;
 const GROUP_COLORS=['#0F6E56','#534AB7','#BA7517','#993C1D','#0E5E8A','#6B6A64'];
 const PERIODS={'maghrib-isha':'المغرب→العشاء','isha-fajr':'العشاء→الفجر','fajr-dhuhr':'الفجر→الظهر','dhuhr-asr':'الظهر→العصر','asr-maghrib':'العصر→المغرب'};
+const PRAYER_PERIODS=[
+  {id:'maghrib-isha',label:'المغرب → العشاء',icon:'ti-moon-stars'},
+  {id:'isha-fajr',label:'العشاء → الفجر',icon:'ti-moon'},
+  {id:'fajr-dhuhr',label:'الفجر → الظهر',icon:'ti-sunrise'},
+  {id:'dhuhr-asr',label:'الظهر → العصر',icon:'ti-sun'},
+  {id:'asr-maghrib',label:'العصر → المغرب',icon:'ti-sunset-2'}
+];
 
 // ============ معرّفات فريدة ============
 function uuid(){
@@ -556,13 +566,48 @@ function totalMinutes(opday){return getDay(opday).logs.reduce((s,l)=>s+logDur(l)
 // ============ منطق المهام (Task) ============
 function activeTasks(opday){return getDay(opday).tasks.filter(t=>t.status==='active');}
 function doneOrFailedTasks(opday){return getDay(opday).tasks.filter(t=>t.status!=='active');}
-function createTask(opday,grp,name){
+function createTask(opday,grp,name,preferredPeriod){
   const day=getDay(opday);
-  const t={id:uuid(),grp,name:name.trim(),status:'active',createdAt:Date.now(),startedAt:null,endedAt:null,durationMin:0,hijriDisplay:day.hijriDisplay};
+  const t={id:uuid(),grp,name:name.trim(),status:'active',createdAt:Date.now(),startedAt:null,endedAt:null,durationMin:0,hijriDisplay:day.hijriDisplay,preferredPeriod:preferredPeriod||null};
   day.tasks.push(t);
   return t;
 }
 function findTask(opday,id){return getDay(opday).tasks.find(t=>t.id===id);}
+// فترة المهمة الفعلية: لو محدد يدويًا (preferredPeriod) بياخد الأولوية، وإلا تُحسب تلقائيًا من وقت الإنشاء
+function taskPeriod(t){
+  if(t.preferredPeriod)return t.preferredPeriod;
+  if(!prayerTimes||!t.createdAt)return null;
+  const d=new Date(t.createdAt);
+  const hm=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  return getPeriod(hm);
+}
+// نص التاج الظاهر جوه بطاقة المهمة (مختصر) + كلاس لوني لو مفيش فترة محسوبة أصلاً
+function periodBadgeLabel(t){
+  const pid=taskPeriod(t);
+  const info=PRAYER_PERIODS.find(p=>p.id===pid);
+  if(!info)return`<i class="ti ti-clock" style="font-size:11px"></i> بلا فترة`;
+  return`<i class="ti ${info.icon}" style="font-size:11px"></i> ${info.label.split(' → ')[0]}`;
+}
+// فتح مودال بسيط لاختيار فترة المهمة يدويًا (أو الرجوع للحساب التلقائي)
+function openPeriodPicker(opday,taskId){
+  const t=findTask(opday,taskId);
+  if(!t)return;
+  document.getElementById('modal-title').textContent='أفضل وقت للتنفيذ';
+  const current=t.preferredPeriod;
+  let rows=`<button class="btn" style="width:100%;margin-bottom:6px;text-align:right${!current?';border-color:var(--teal);color:var(--teal)':''}" onclick="setTaskPeriod('${opday}','${taskId}',null)">
+    <i class="ti ti-wand"></i> تلقائي (حسب وقت الإنشاء)</button>`;
+  rows+=PRAYER_PERIODS.map(p=>`
+    <button class="btn" style="width:100%;margin-bottom:6px;text-align:right${current===p.id?';border-color:var(--teal);color:var(--teal)':''}" onclick="setTaskPeriod('${opday}','${taskId}','${p.id}')">
+      <i class="ti ${p.icon}"></i> ${p.label.split(' → ')[0]}</button>`).join('');
+  document.getElementById('modal-body').innerHTML=rows;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function setTaskPeriod(opday,taskId,periodId){
+  const t=findTask(opday,taskId);
+  if(!t)return;
+  t.preferredPeriod=periodId||null;
+  saveDB();closeModal();renderToday();
+}
 function taskComplete(opday,id,status){
   const t=findTask(opday,id);
   if(!t)return;
@@ -629,7 +674,10 @@ function renderToday(){
       html+=`<div class="task-row"${isFirst?' id="ob-task-card"':''}>
         <div class="t-main">
           <div class="t-name">${esc(t.name)}</div>
-          ${t.startedAt?`<div class="t-sub">${running?'شغال دلوقتي':'اتسجل: '+fmtDur(elapsed)}</div>`:''}
+          <div class="t-sub" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            ${t.startedAt?`<span>${running?'شغال دلوقتي':'اتسجل: '+fmtDur(elapsed)}</span>`:''}
+            <span class="t-period-badge" onclick="event.stopPropagation();openPeriodPicker('${opday}','${t.id}')">${periodBadgeLabel(t)}</span>
+          </div>
         </div>
         <div class="t-actions">
           <button class="t-play ${running?'running':''}"${isFirst?' id="ob-start-btn"':''} onclick="${running?'timerStop()':`timerStart('${t.id}')`}"><i class="ti ${running?'ti-player-stop-filled':'ti-player-play-filled'}"></i>${running?'إيقاف':'ابدأ'}</button>
@@ -827,13 +875,6 @@ function archiveDelete(opday,id){
 }
 
 // ============ السجل — عرض الفترات (بدون تغيير جوهري) ============
-const PRAYER_PERIODS=[
-  {id:'maghrib-isha',label:'المغرب → العشاء',icon:'ti-moon-stars'},
-  {id:'isha-fajr',label:'العشاء → الفجر',icon:'ti-moon'},
-  {id:'fajr-dhuhr',label:'الفجر → الظهر',icon:'ti-sunrise'},
-  {id:'dhuhr-asr',label:'الظهر → العصر',icon:'ti-sun'},
-  {id:'asr-maghrib',label:'العصر → المغرب',icon:'ti-sunset-2'}
-];
 let activePeriodId=null;
 function periodList(){
   const pt=prayerTimes;
