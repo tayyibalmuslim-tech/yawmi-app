@@ -128,7 +128,8 @@ body{font-family:'Tajawal',-apple-system,"Segoe UI",sans-serif;background:var(--
 .le-period{font-size:10.5px;color:var(--text-hint)}
 .le-del{background:none;border:none;color:var(--text-hint);font-size:15px;cursor:pointer;padding:4px}
 
-input,select{width:100%;padding:9px 10px;border:.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:16px;background:var(--card);color:var(--text);outline:none;-webkit-appearance:none}
+input:not([type=checkbox]):not([type=radio]),select{width:100%;padding:9px 10px;border:.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:16px;background:var(--card);color:var(--text);outline:none;-webkit-appearance:none}
+input[type=checkbox]{width:20px;height:20px;flex-shrink:0;accent-color:var(--teal);cursor:pointer;-webkit-appearance:checkbox;appearance:checkbox}
 input:focus,select:focus{border-color:var(--teal)}
 label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
 .field{margin-bottom:9px}
@@ -431,7 +432,8 @@ function defaultSettings(){
       {id:uuid(),name:'الشغل',icon:'ti-briefcase',color:'#BA7517'},
       {id:uuid(),name:'علم',icon:'ti-school',color:'#3C3489'}
     ],
-    city:'Cairo',country:'EG'
+    city:'Cairo',country:'EG',
+    rememberSaveAct:false // آخر حالة اختارها المستخدم لتشيك "احفظه في قائمتي" — تُطبَّق تلقائيًا كقيمة افتراضية عند فتح الفورم من جديد
   };
 }
 // ============ الحساب الحالي ومفاتيح التخزين المحلي ============
@@ -465,6 +467,7 @@ function loadFix(){
   if(!db.settings.groups||!db.settings.groups.length)db.settings.groups=defaultSettings().groups;
   if(!db.settings.city)db.settings.city='Cairo';
   if(!db.settings.country)db.settings.country='EG';
+  if(typeof db.settings.rememberSaveAct!=='boolean')db.settings.rememberSaveAct=false;
   if(!db.templates)db.templates=[];
   if(!db.days)db.days={};
   if(!db.dayIndex)db.dayIndex={seq:0,lastOpday:null};
@@ -474,7 +477,12 @@ function loadFix(){
     if(!d.logs)d.logs=[];
   });
 }
-function saveDB(){localStorage.setItem(dbKey(),JSON.stringify(db));schedulePush();}
+// pendingLocalChange: علامة "فيه تعديل محلي لسه معلّق ولم يُرفع للسحابة بنجاح بعد".
+// السبب الجذري لمشاكل فقدان تعديلات محلية (زي تشيك "احفظه في قائمتي"): كان onSnapshot بيستبدل db بالكامل
+// فور وصول أي تحديث من السحابة، حتى لو كان فيه تعديل محلي حديث لسه في طور الرفع (خلال مهلة الـ debounce
+// 1200ms في schedulePush). لو وصل snapshot أقدم في نفس اللحظة، كان بيدهس التعديل المحلي بالكامل.
+let pendingLocalChange=false;
+function saveDB(){pendingLocalChange=true;localStorage.setItem(dbKey(),JSON.stringify(db));schedulePush();}
 function GROUPS(){return db.settings.groups;}
 function groupById(id){return GROUPS().find(g=>g.id===id);}
 
@@ -672,7 +680,7 @@ function renderToday(){
       const isFirst=!firstTaskDone;
       if(isFirst)firstTaskDone=true;
       html+=`<div class="task-row"${isFirst?' id="ob-task-card"':''}>
-        <div class="t-main">
+        <div class="t-main" style="cursor:pointer" onclick="openEditTask('${opday}','${t.id}')">
           <div class="t-name">${esc(t.name)}</div>
           <div class="t-sub" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
             ${t.startedAt?`<span>${running?'شغال دلوقتي':'اتسجل: '+fmtDur(elapsed)}</span>`:''}
@@ -709,6 +717,44 @@ function saveNewTask(){
   if(!name){alert('اكتب اسم المهمة');return;}
   createTask(getCurrentOperationalDay(),grp,name);
   saveDB();closeModal();renderToday();
+}
+
+// ============ تعديل/حذف مهمة نشطة ============
+let editingTask=null;
+function openEditTask(opday,id){
+  const t=findTask(opday,id);
+  if(!t)return;
+  editingTask={opday,id};
+  let opts=GROUPS().map(g=>`<option value="${g.id}"${g.id===t.grp?' selected':''}>${esc(g.name)}</option>`).join('');
+  document.getElementById('modal-title').textContent='تعديل المهمة';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="field"><label>المجال</label><select id="et-grp">${opts}</select></div>
+    <div class="field"><label>اسم المهمة</label><input type="text" id="et-name" value="${esc(t.name)}" placeholder="مثال: مراجعة الحفظ"></div>
+    <button class="btn btn-primary" onclick="saveEditTask()"><i class="ti ti-check"></i> حفظ التعديل</button>
+    <button class="btn btn-danger" style="width:100%;margin-top:8px" onclick="deleteActiveTask()"><i class="ti ti-trash"></i> حذف المهمة</button>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('et-name').focus(),50);
+}
+function saveEditTask(){
+  const t=findTask(editingTask.opday,editingTask.id);
+  if(!t)return;
+  const name=document.getElementById('et-name').value.trim();
+  if(!name){alert('اكتب اسم المهمة');return;}
+  t.name=name;
+  t.grp=document.getElementById('et-grp').value;
+  saveDB();closeModal();renderToday();
+}
+function deleteActiveTask(){
+  if(!confirm('متأكد من حذف المهمة؟ لو فيها وقت مسجّل أو مؤقت شغال، هيتم إيقافه أولاً.'))return;
+  const{opday,id}=editingTask;
+  // لو المؤقت شغال على نفس المهمة، لازم نوقفه ونحفظ التسجيلة في السجل قبل الحذف
+  // (نفس المنطق المتبع في taskComplete)، عشان الوقت المسجّل لغاية دلوقتي ميضيعش من السجل.
+  if(timer&&timer.taskId===id){
+    timerStopInternal(opday);
+  }
+  deleteTaskPermanently(opday,id);
+  closeModal();renderToday();renderLog();
 }
 
 // ============ القوالب (Templates) ============
@@ -994,12 +1040,14 @@ function renderPeriodTimeline(opday,isToday,currentPid){
     const h=Math.max(26,toY(l.end)-y);
     maxBottom=Math.max(maxBottom,y+h);
     totalMin+=logDur(l);
-    // نقسم العرض المتاح (بعد خصم 2px يمين و4px شمال زي الهامش القديم) بالتساوي بين الأعمدة،
-    // مع فراغ صغير 3px بين كل عمود والتاني
-    const gap=3;
-    const widthCalc=`(100% - 6px - ${(cols-1)*gap}px) / ${cols}`;
-    const leftCalc=`2px + (${widthCalc} + ${gap}px) * ${col}`;
-    blocks+=`<div class="cal-block" style="top:${y}px;height:${h}px;left:calc(${leftCalc});width:calc(${widthCalc});background:${blockColor(l)}" onclick="openLogForm('${opday}',${JSON.stringify(l.id)})">
+    // نحسب left/width كنسب مئوية بسيطة مباشرة (بدون calc() متداخلة) لضمان توافق موثوق مع كل المتصفحات.
+    // كل عمود ياخد حصة متساوية بالضبط من 100% (بدون طرح فراغ من العرض الكلي، لضمان مجموع دقيق = 100% رياضيًا)،
+    // والفراغ البصري بين الأعمدة يتحقق بـ padding داخلي على كل بلوك بدل التلاعب في width نفسها.
+    const widthPct=100/cols;
+    const leftPct=col*widthPct;
+    const padRight=cols>1&&col<cols-1?'3px':'0px';
+    const padLeft=cols>1&&col>0?'3px':'0px';
+    blocks+=`<div class="cal-block" style="top:${y}px;height:${h}px;left:${leftPct}%;width:${widthPct}%;padding-left:calc(7px + ${padLeft});padding-right:calc(7px + ${padRight});background:${blockColor(l)}" onclick="openLogForm('${opday}',${JSON.stringify(l.id)})">
       <div class="cal-block-title">${esc(l.label)}</div>
       <div class="cal-block-time">${fmt12(l.start)}–${fmt12(l.end)}${cols===1?' · '+fmtDur(logDur(l)):''}</div>
     </div>`;
@@ -1063,7 +1111,7 @@ function openLogForm(opday,id){
     <div class="field" id="lf-free-wrap" style="display:${sel==='free'?'block':'none'}">
       <label>اكتبه</label>
       <input type="text" id="lf-free" value="${entry&&sel==='free'?esc(entry.label):''}" placeholder="مثال: قعدة عائلية، مشوار...">
-      <label style="display:flex;align-items:center;gap:6px;margin-top:6px;cursor:pointer"><input type="checkbox" id="lf-save-act" style="width:16px;height:16px"> احفظه في قائمتي للمرات الجاية</label>
+      <label style="display:flex;align-items:center;gap:8px;margin-top:8px;cursor:pointer"><input type="checkbox" id="lf-save-act"${db.settings.rememberSaveAct?' checked':''} onchange="db.settings.rememberSaveAct=this.checked;saveDB()"> احفظه في قائمتي للمرات الجاية</label>
     </div>
     <div class="row-2 field">
       <div><label>من</label><input type="time" id="lf-start" value="${st}"></div>
@@ -1085,7 +1133,9 @@ function saveLogEntry(){
   if(v==='free'){
     label=document.getElementById('lf-free').value.trim();
     if(!label){alert('اكتب النشاط');return;}
-    if(document.getElementById('lf-save-act').checked&&!db.settings.customActs.includes(label))db.settings.customActs.push(label);
+    const wantsSave=document.getElementById('lf-save-act').checked;
+    db.settings.rememberSaveAct=wantsSave; // نتذكر اختيار المستخدم الأخير ليُطبَّق كقيمة افتراضية في المرة القادمة
+    if(wantsSave&&!db.settings.customActs.includes(label))db.settings.customActs.push(label);
   }else if(v.startsWith('act:')){
     label=v.slice(4);
   }else{
@@ -1213,7 +1263,7 @@ async function pushToCloud(){
   const ref=userDocRef();
   if(!ref||applyingRemote)return;
   const json=JSON.stringify(db);
-  if(json===lastPushed)return;
+  if(json===lastPushed){pendingLocalChange=false;return;}
   setSyncStatus('syncing');
   try{
     // الحفظ محلي أولًا (تم في saveDB) ثم المزامنة — Firestore يعيد الإرسال تلقائيًا عند عودة الاتصال
@@ -1223,8 +1273,14 @@ async function pushToCloud(){
       email:currentUser.email||'',
       updatedAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-    lastPushed=json;setSyncStatus('synced');
-  }catch(e){console.error(e);setSyncStatus('error');}
+    lastPushed=json;pendingLocalChange=false;setSyncStatus('synced');
+  }catch(e){
+    console.error(e);setSyncStatus('error');
+    // إعادة محاولة تلقائية بعد فشل الرفع (مثلاً انقطاع نت لحظي)، بدل ما يفضل pendingLocalChange
+    // معلّقة للأبد وتمنع أي مزامنة واردة من السحابة بشكل دائم.
+    clearTimeout(pushTimer);
+    pushTimer=setTimeout(pushToCloud,5000);
+  }
 }
 function startSyncListener(){
   if(syncUnsub){syncUnsub();syncUnsub=null;}
@@ -1241,6 +1297,14 @@ function startSyncListener(){
     if(remoteVersion>SCHEMA_VERSION){
       console.warn('البيانات على الكلاود أحدث من نسخة التطبيق الحالية — حدّث التطبيق أولاً');
       setSyncStatus('error');
+      return;
+    }
+    // السبب الجذري لضياع تعديلات محلية (زي checkbox "احفظه في قائمتي"): لو فيه تعديل محلي لسه
+    // معلّق (pendingLocalChange) ولم يُرفع بنجاح بعد، فلازم الرفع المحلي يكسب الأولوية، مش نسخة السحابة
+    // الأقدم. بدل ما ندهس db بالكامل، نأجّل تطبيق التحديث الوارد وندي أولوية للـ push المحلي المجدول أصلاً؛
+    // schedulePush/pushToCloud هيتكفلوا يرفعوا آخر نسخة محلية ويحلّوا الفرق تلقائيًا بمجرد ما ينجحوا.
+    if(pendingLocalChange){
+      console.warn('تجاهل تحديث وارد من السحابة مؤقتًا: فيه تعديل محلي معلّق لسه لم يُرفع');
       return;
     }
     try{
