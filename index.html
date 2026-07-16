@@ -105,8 +105,8 @@ body{font-family:'Tajawal',-apple-system,"Segoe UI",sans-serif;background:var(--
 .t-play i{font-size:14px}
 .t-play.running{background:var(--coral);color:#fff;animation:pulse 1.4s infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(153,60,29,.35)}50%{box-shadow:0 0 0 7px rgba(153,60,29,0)}}
-.t-done-btn{width:30px;height:30px;border:none;border-radius:8px;background:var(--teal-light);color:var(--teal-text);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
-.t-fail-btn{width:30px;height:30px;border:none;border-radius:8px;background:var(--coral-light);color:var(--coral-text);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.t-done-btn{width:30px;height:30px;border:none;border-radius:8px;background:var(--teal-light);color:var(--teal-text);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800}
+.t-fail-btn{width:30px;height:30px;border:none;border-radius:8px;background:var(--coral-light);color:var(--coral-text);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800}
 
 .arc-row{display:flex;align-items:center;gap:9px;padding:9px 4px;border-bottom:.5px solid var(--border)}
 .arc-row:last-child{border-bottom:none}
@@ -169,7 +169,7 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
 .cal-block{position:absolute;left:2px;right:4px;border-radius:6px;padding:3px 7px;overflow:hidden;cursor:pointer;color:#fff}
 .cal-block-title{font-size:11.5px;font-weight:600;line-height:1.25;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .cal-block-time{font-size:9.5px;opacity:.85;margin-top:1px}
-.cal-empty-slot{position:absolute;left:2px;right:4px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text-hint);cursor:pointer}
+.cal-empty-slot{position:absolute;left:2px;right:4px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--teal);cursor:pointer;font-size:13px;font-weight:600;background:rgba(0,0,0,0.01)}
 .cal-empty-slot i{font-size:14px}
 .act-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:.5px solid var(--border)}
 .act-row:last-child{border-bottom:none}
@@ -571,8 +571,8 @@ function renderToday(){
         </div>
         <div class="t-actions">
           <button class="t-play ${running?'running':''}" onclick="${running?'timerStop()':`timerStart('${t.id}')`}"><i class="ti ${running?'ti-player-stop-filled':'ti-player-play-filled'}"></i>${running?'إيقاف':'ابدأ'}</button>
-          <button class="t-done-btn" onclick="taskComplete('${opday}','${t.id}','done')" title="تم"><i class="ti ti-check"></i></button>
-          <button class="t-fail-btn" onclick="taskComplete('${opday}','${t.id}','failed')" title="لم أنجز"><i class="ti ti-x"></i></button>
+          <button class="t-done-btn" onclick="taskComplete('${opday}','${t.id}','done')" title="تم">✓</button>
+          <button class="t-fail-btn" onclick="taskComplete('${opday}','${t.id}','failed')" title="لم أنجز">✗</button>
         </div>
       </div>`;
     });
@@ -864,8 +864,6 @@ function renderPeriodTimeline(opday,isToday,currentPid){
       <div class="cal-block-time">${fmt12(l.start)}–${fmt12(l.end)} · ${fmtDur(logDur(l))}</div>
     </div>`;
   });
-  blocks+=`<div class="cal-empty-slot" style="top:${logs.length?maxBottom+10:6}px;height:36px" onclick="openLogForm('${opday}',-1)"><i class="ti ti-plus"></i></div>`;
-
   document.getElementById('log-timeline').innerHTML=`
   <div class="card" style="padding:0;overflow:hidden${isCurrent?';border-color:var(--teal);border-width:1.5px':''}">
     <div class="period-summary" style="padding:14px 14px 10px">
@@ -880,7 +878,8 @@ function renderPeriodTimeline(opday,isToday,currentPid){
       <div class="cal-done-col" style="height:${axisH}px">${hourLines}${blocks}${nowLine}</div>
     </div>
   </div>
-  <div class="text-muted" style="text-align:center;margin-top:4px">دوس على أي بلوك للتعديل أو الحذف · دوس + للإضافة</div>`;
+  <button class="btn btn-primary" style="margin-top:10px" onclick="openLogForm('${opday}',-1)"><i class="ti ti-plus"></i> تسجيل جلسة</button>
+  <div class="text-muted" style="text-align:center;margin-top:6px">دوس على أي بلوك للتعديل أو الحذف</div>`;
 }
 
 // ============ فورم إضافة/تعديل تسجيلة ============
