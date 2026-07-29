@@ -241,6 +241,64 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
 .ob-btn-prev{background:var(--gray-light);color:var(--text)}
 .ob-btn-next{background:var(--teal);color:#fff}
 .ob-arrow{position:absolute;width:14px;height:14px;background:var(--card);transform:rotate(45deg);pointer-events:none}
+
+/* ============ المهام الفرعية (Subtasks) ============ */
+.task-wrap{border-bottom:.5px solid var(--border)}
+.task-wrap:last-child{border-bottom:none}
+.task-wrap .task-row{border-bottom:none}
+.t-subs-badge{display:inline-flex;align-items:center;gap:3px;background:var(--purple-light);color:var(--purple-text);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;cursor:pointer;white-space:nowrap}
+.t-subs-badge:active{opacity:.7}
+.t-subs-badge.empty{background:var(--gray-light);color:var(--text-hint)}
+.t-subs-bar{height:4px;background:var(--gray-light);border-radius:4px;overflow:hidden;margin-top:5px}
+.t-subs-fill{height:100%;background:var(--purple);border-radius:4px;transition:width .2s}
+.sub-wrap{padding:2px 6px 10px 0;margin:0 6px 0 0;border-right:2px solid var(--border)}
+.sub-row{display:flex;align-items:center;gap:8px;padding:5px 8px 5px 0}
+.sub-check{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:transparent;font-size:12px;cursor:pointer;background:var(--card)}
+.sub-check.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.sub-name{flex:1;font-size:12.5px;min-width:0;cursor:pointer;word-break:break-word}
+.sub-name.done{text-decoration:line-through;color:var(--text-hint)}
+.sub-del{background:none;border:none;color:var(--text-hint);font-size:13px;cursor:pointer;padding:3px 4px;flex-shrink:0}
+.sub-add{display:flex;align-items:center;gap:6px;padding:4px 8px 0 0}
+.sub-add input{flex:1;padding:6px 9px !important;font-size:13px !important;border-radius:7px !important}
+.sub-add button{width:30px;height:30px;flex-shrink:0;border:none;border-radius:7px;background:var(--teal-light);color:var(--teal-text);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.tpl-subs{padding:2px 10px 4px 0;margin-right:4px;border-right:2px solid var(--border)}
+.tpl-sub-item{display:flex;align-items:center;gap:6px;padding:3px 0}
+.tpl-sub-item input{flex:1;padding:6px 9px !important;font-size:13px !important}
+.tpl-sub-item .act-del{width:28px;height:28px;font-size:12px}
+.tpl-item-wrap{border-bottom:.5px dashed var(--border);padding-bottom:6px;margin-bottom:4px}
+.tpl-item-wrap:last-of-type{border-bottom:none}
+
+/* ============ متابعة الصلوات ============ */
+.pr-strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+.pr-strip::-webkit-scrollbar{display:none}
+.pr-chip{flex:1;min-width:62px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px;border-radius:12px;border:.5px solid var(--border);background:var(--card);cursor:pointer}
+.pr-chip:active{opacity:.7}
+.pr-chip i{font-size:17px;color:var(--text-hint)}
+.pr-chip .pr-cname{font-size:10.5px;font-weight:700;color:var(--text-sec);white-space:nowrap}
+.pr-chip .pr-cscore{font-size:9.5px;font-weight:700;color:var(--text-hint);font-variant-numeric:tabular-nums}
+.pr-chip.s-none{border-style:dashed}
+.pr-chip.s-low{background:var(--coral-light);border-color:transparent}
+.pr-chip.s-low i,.pr-chip.s-low .pr-cname,.pr-chip.s-low .pr-cscore{color:var(--coral-text)}
+.pr-chip.s-mid{background:var(--amber-light);border-color:transparent}
+.pr-chip.s-mid i,.pr-chip.s-mid .pr-cname,.pr-chip.s-mid .pr-cscore{color:var(--amber-text)}
+.pr-chip.s-full{background:var(--teal-light);border-color:transparent}
+.pr-chip.s-full i,.pr-chip.s-full .pr-cname,.pr-chip.s-full .pr-cscore{color:var(--teal-text)}
+.pr-chip.is-now{box-shadow:0 0 0 1.5px var(--teal)}
+.pr-row{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:.5px solid var(--border);cursor:pointer;user-select:none}
+.pr-row:last-of-type{border-bottom:none}
+.pr-row.locked{opacity:.4;pointer-events:none}
+.pr-ico{width:32px;height:32px;border-radius:9px;background:var(--gray-light);color:var(--text-sec);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.pr-row.on .pr-ico{background:var(--teal-light);color:var(--teal-text)}
+.pr-label{font-size:13.5px;font-weight:600}
+.pr-hint{font-size:10.5px;color:var(--text-hint);margin-top:1px}
+.sw{width:44px;height:25px;border-radius:20px;background:var(--gray-light);position:relative;flex-shrink:0;transition:background .18s}
+.sw::after{content:'';position:absolute;top:3px;right:3px;width:19px;height:19px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.28);transition:transform .18s}
+.pr-row.on .sw{background:var(--teal)}
+.pr-row.on .sw::after{transform:translateX(-19px)}
+.pr-quick{display:flex;gap:6px;margin-bottom:10px}
+.pr-quick button{flex:1}
+.pr-period-btn{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;border:none;border-top:.5px solid var(--border);background:var(--gray-light);color:var(--text);font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;text-align:right}
+.pr-period-btn i{font-size:16px;color:var(--teal)}
 </style>
 </head>
 <body>
@@ -299,6 +357,10 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
       <div class="stat"><div class="stat-num" id="st-mins">0 د</div><div class="stat-label">وقت مسجّل</div></div>
       <div class="stat"><div class="stat-num" id="st-pct">0%</div><div class="stat-label">نسبة الإنجاز</div></div>
     </div>
+    <div class="card" id="ob-prayer-strip" style="padding:10px 10px 9px">
+      <div class="sec-title" style="margin-bottom:8px"><i class="ti ti-building-mosque" style="color:var(--teal)"></i> صلوات اليوم <span id="today-pr-total" style="margin-right:auto;font-weight:800;color:var(--teal)"></span></div>
+      <div class="pr-strip" id="today-prayers"></div>
+    </div>
     <div id="today-actions" style="display:flex;gap:8px;margin-bottom:10px"></div>
     <div id="today-lists"></div>
   </div>
@@ -312,6 +374,10 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
       </div>
     </div>
     <div id="log-pt-info" style="font-size:11.5px;color:var(--text-sec);margin:0 4px 10px;line-height:1.6"></div>
+    <div class="card" style="padding:10px 10px 9px">
+      <div class="sec-title" style="margin-bottom:8px"><i class="ti ti-building-mosque" style="color:var(--teal)"></i> سجل الصلوات — دوس على الصلاة عشان تسجّلها <span id="log-pr-total" style="margin-right:auto;font-weight:800;color:var(--teal)"></span></div>
+      <div class="pr-strip" id="log-prayers"></div>
+    </div>
     <div class="period-tabs" id="period-tabs"></div>
     <div id="log-timeline"></div>
   </div>
@@ -333,6 +399,11 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
     <div class="card">
       <div class="sec-title"><i class="ti ti-clock"></i> الوقت المسجّل يومياً</div>
       <div id="week-time"></div>
+    </div>
+    <div class="card">
+      <div class="sec-title"><i class="ti ti-building-mosque" style="color:var(--teal)"></i> الصلوات (آخر ٧ أيام)</div>
+      <div id="week-prayers"></div>
+      <div id="week-prayers-sum" style="margin-top:8px"></div>
     </div>
   </div>
 </div>
@@ -396,7 +467,7 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
 <script>
 "use strict";
 // ============ ثوابت ============
-const SCHEMA_VERSION=2;
+const SCHEMA_VERSION=3;
 const GROUP_COLORS=['#0F6E56','#534AB7','#BA7517','#993C1D','#0E5E8A','#6B6A64'];
 const PERIODS={'maghrib-isha':'المغرب→العشاء','isha-fajr':'العشاء→الفجر','fajr-dhuhr':'الفجر→الظهر','dhuhr-asr':'الظهر→العصر','asr-maghrib':'العصر→المغرب'};
 const PRAYER_PERIODS=[
@@ -406,6 +477,25 @@ const PRAYER_PERIODS=[
   {id:'dhuhr-asr',label:'الظهر → العصر',icon:'ti-sun'},
   {id:'asr-maghrib',label:'العصر → المغرب',icon:'ti-sunset-2'}
 ];
+// ============ الصلوات الخمس ============
+// الترتيب هنا بترتيب اليوم التشغيلي (اللي بيبدأ من المغرب) مش الترتيب الميلادي
+const PRAYERS=[
+  {id:'maghrib',name:'المغرب',icon:'ti-sunset-2',key:'Maghrib',period:'maghrib-isha'},
+  {id:'isha',name:'العشاء',icon:'ti-moon-stars',key:'Isha',period:'isha-fajr'},
+  {id:'fajr',name:'الفجر',icon:'ti-sunrise',key:'Fajr',period:'fajr-dhuhr'},
+  {id:'dhuhr',name:'الظهر',icon:'ti-sun',key:'Dhuhr',period:'dhuhr-asr'},
+  {id:'asr',name:'العصر',icon:'ti-sun-low',key:'Asr',period:'asr-maghrib'}
+];
+// بنود تقييم الصلاة — needsJamaah معناها البند ده ملهوش معنى إلا لو صليت جماعة
+const PRAYER_FIELDS=[
+  {id:'onTime',label:'صليتها في وقتها',icon:'ti-clock-check',hint:'قبل ما يخرج وقتها'},
+  {id:'jamaah',label:'صليتها جماعة',icon:'ti-users'},
+  {id:'takbira',label:'أدركت تكبيرة الإحرام',icon:'ti-bolt',needsJamaah:true},
+  {id:'firstRow',label:'أدركت الصف الأول',icon:'ti-layout-rows',needsJamaah:true},
+  {id:'sunnah',label:'صليت السنة الراتبة',icon:'ti-star',hint:'الرواتب القبلية والبعدية'},
+  {id:'wird',label:'قرأت ورد الصلاة',icon:'ti-book-2',hint:'الأذكار والورد المرتبط بالصلاة'}
+];
+const PRAYER_MAX=PRAYER_FIELDS.length;
 
 // ============ معرّفات فريدة ============
 function uuid(){
@@ -475,7 +565,16 @@ function loadFix(){
   Object.values(db.days).forEach(d=>{
     if(!d.tasks)d.tasks=[];
     if(!d.logs)d.logs=[];
+    // ترحيل v3: سجل الصلوات لكل يوم + المهام الفرعية لكل مهمة
+    if(!d.prayers||typeof d.prayers!=='object')d.prayers={};
+    d.tasks.forEach(t=>{if(!Array.isArray(t.subs))t.subs=[];});
   });
+  // ترحيل v3: عناصر القوالب ممكن يبقى لها مهام فرعية جاهزة
+  db.templates.forEach(tpl=>{
+    if(!Array.isArray(tpl.items))tpl.items=[];
+    tpl.items.forEach(it=>{if(!Array.isArray(it.subs))it.subs=[];});
+  });
+  db.schemaVersion=SCHEMA_VERSION;
 }
 // pendingLocalChange: علامة "فيه تعديل محلي لسه معلّق ولم يُرفع للسحابة بنجاح بعد".
 // السبب الجذري لمشاكل فقدان تعديلات محلية (زي تشيك "احفظه في قائمتي"): كان onSnapshot بيستبدل db بالكامل
@@ -508,9 +607,10 @@ function ensureOpday(civilDs){
   return opday;
 }
 function getDay(opday){
-  if(!db.days[opday])db.days[opday]={tasks:[],logs:[],hijriDisplay:hijriStrForOpday(opday)};
+  if(!db.days[opday])db.days[opday]={tasks:[],logs:[],prayers:{},hijriDisplay:hijriStrForOpday(opday)};
   if(!db.days[opday].tasks)db.days[opday].tasks=[];
   if(!db.days[opday].logs)db.days[opday].logs=[];
+  if(!db.days[opday].prayers||typeof db.days[opday].prayers!=='object')db.days[opday].prayers={};
   return db.days[opday];
 }
 function hijriStrForOpday(opday){
@@ -574,13 +674,87 @@ function totalMinutes(opday){return getDay(opday).logs.reduce((s,l)=>s+logDur(l)
 // ============ منطق المهام (Task) ============
 function activeTasks(opday){return getDay(opday).tasks.filter(t=>t.status==='active');}
 function doneOrFailedTasks(opday){return getDay(opday).tasks.filter(t=>t.status!=='active');}
-function createTask(opday,grp,name,preferredPeriod){
+function createTask(opday,grp,name,preferredPeriod,subNames){
   const day=getDay(opday);
-  const t={id:uuid(),grp,name:name.trim(),status:'active',createdAt:Date.now(),startedAt:null,endedAt:null,durationMin:0,hijriDisplay:day.hijriDisplay,preferredPeriod:preferredPeriod||null};
+  const subs=(subNames||[]).filter(n=>n&&n.trim()).map(n=>({id:uuid(),name:n.trim(),done:false}));
+  const t={id:uuid(),grp,name:name.trim(),status:'active',createdAt:Date.now(),startedAt:null,endedAt:null,durationMin:0,hijriDisplay:day.hijriDisplay,preferredPeriod:preferredPeriod||null,subs};
   day.tasks.push(t);
   return t;
 }
 function findTask(opday,id){return getDay(opday).tasks.find(t=>t.id===id);}
+
+// ============ المهام الفرعية (Subtasks) ============
+// حالة الفتح/الغلق محفوظة في الذاكرة فقط (مش في الداتا) عشان متتزامنش بين الأجهزة بلا داعي
+let expandedTasks=new Set();
+let focusSubInput=null; // معرف المهمة اللي لازم نرجّع الفوكس لخانة الإضافة بتاعتها بعد الرندر
+function taskSubs(t){if(!Array.isArray(t.subs))t.subs=[];return t.subs;}
+function subsDone(t){return taskSubs(t).filter(s=>s.done).length;}
+function toggleSubsView(id){
+  if(expandedTasks.has(id))expandedTasks.delete(id);else expandedTasks.add(id);
+  renderToday();
+}
+function addSub(opday,taskId){
+  const inp=document.getElementById('sub-inp-'+taskId);
+  if(!inp)return;
+  const name=inp.value.trim();
+  if(!name)return;
+  const t=findTask(opday,taskId);
+  if(!t)return;
+  taskSubs(t).push({id:uuid(),name,done:false});
+  inp.value='';
+  expandedTasks.add(taskId);
+  focusSubInput=taskId;
+  saveDB();renderToday();
+}
+function toggleSub(opday,taskId,subId){
+  const t=findTask(opday,taskId);
+  if(!t)return;
+  const s=taskSubs(t).find(x=>x.id===subId);
+  if(!s)return;
+  s.done=!s.done;
+  saveDB();renderToday();
+  // لو كل الفرعية خلصت والمهمة لسه نشطة، نعرض عليه يقفل الأساسية
+  if(s.done&&t.status==='active'&&taskSubs(t).length&&subsDone(t)===taskSubs(t).length){
+    setTimeout(()=>{
+      if(confirm('كل المهام الفرعية خلصت — نقفل المهمة الأساسية «'+t.name+'» على إنها منجزة؟')){
+        taskComplete(opday,taskId,'done');
+      }
+    },120);
+  }
+}
+function renameSub(opday,taskId,subId){
+  const t=findTask(opday,taskId);
+  if(!t)return;
+  const s=taskSubs(t).find(x=>x.id===subId);
+  if(!s)return;
+  const v=prompt('اسم المهمة الفرعية:',s.name);
+  if(v===null)return;
+  if(!v.trim())return;
+  s.name=v.trim();
+  saveDB();renderToday();
+}
+function deleteSub(opday,taskId,subId){
+  const t=findTask(opday,taskId);
+  if(!t)return;
+  t.subs=taskSubs(t).filter(x=>x.id!==subId);
+  saveDB();renderToday();
+}
+// رندر بلوك المهام الفرعية تحت بطاقة المهمة
+function subsBlockHtml(opday,t){
+  const subs=taskSubs(t);
+  let h='<div class="sub-wrap">';
+  h+=subs.map(s=>`<div class="sub-row">
+      <div class="sub-check${s.done?' on':''}" onclick="toggleSub('${opday}','${t.id}','${s.id}')"><i class="ti ti-check"></i></div>
+      <div class="sub-name${s.done?' done':''}" onclick="renameSub('${opday}','${t.id}','${s.id}')">${esc(s.name)}</div>
+      <button class="sub-del" onclick="deleteSub('${opday}','${t.id}','${s.id}')"><i class="ti ti-x"></i></button>
+    </div>`).join('');
+  h+=`<div class="sub-add">
+    <input type="text" id="sub-inp-${t.id}" placeholder="خطوة فرعية جديدة..." onkeydown="if(event.key==='Enter'){event.preventDefault();addSub('${opday}','${t.id}')}">
+    <button onclick="addSub('${opday}','${t.id}')"><i class="ti ti-plus"></i></button>
+  </div>`;
+  h+='</div>';
+  return h;
+}
 // فترة المهمة الفعلية: لو محدد يدويًا (preferredPeriod) بياخد الأولوية، وإلا تُحسب تلقائيًا من وقت الإنشاء
 function taskPeriod(t){
   if(t.preferredPeriod)return t.preferredPeriod;
@@ -629,6 +803,136 @@ function taskComplete(opday,id,status){
   }
   saveDB();renderToday();
 }
+// ============ متابعة الصلوات (Prayer Tracking) ============
+function prayerRec(opday,pid){
+  const d=getDay(opday);
+  return d.prayers[pid]||null;
+}
+function prayerScore(rec){
+  if(!rec)return 0;
+  return PRAYER_FIELDS.reduce((s,f)=>s+(rec[f.id]?1:0),0);
+}
+function prayerScoreClass(rec){
+  if(!rec)return 's-none';
+  const n=prayerScore(rec);
+  if(n===0)return 's-low';
+  if(n>=PRAYER_MAX)return 's-full';
+  if(n>=3)return 's-mid';
+  return 's-low';
+}
+function dayPrayerScore(opday){
+  if(!db.days[opday])return 0;
+  return PRAYERS.reduce((s,p)=>s+prayerScore(db.days[opday].prayers&&db.days[opday].prayers[p.id]),0);
+}
+// شريط الصلوات الخمس — يُستخدم في شاشة اليوم وشاشة السجل
+function prayerStripHtml(opday,currentPid){
+  return PRAYERS.map(p=>{
+    const rec=prayerRec(opday,p.id);
+    const cls=prayerScoreClass(rec);
+    const isNow=currentPid&&p.period===currentPid;
+    const t=prayerTimes?prayerTimes[p.key]:'';
+    return`<div class="pr-chip ${cls}${isNow?' is-now':''}" onclick="openPrayerForm('${opday}','${p.id}')" title="${esc(p.name)}">
+      <i class="ti ${p.icon}"></i>
+      <span class="pr-cname">${p.name}</span>
+      <span class="pr-cscore">${rec?prayerScore(rec)+'/'+PRAYER_MAX:(t?fmt12(t):'—')}</span>
+    </div>`;
+  }).join('');
+}
+function renderPrayerStrips(){
+  const opday=getCurrentOperationalDay();
+  const currentPid=getPeriod(nowHM());
+  const el=document.getElementById('today-prayers');
+  if(el){
+    el.innerHTML=prayerStripHtml(opday,currentPid);
+    const tot=document.getElementById('today-pr-total');
+    if(tot)tot.textContent=dayPrayerScore(opday)+'/'+(PRAYERS.length*PRAYER_MAX);
+  }
+}
+
+let prayerDraft=null,editingPrayer=null;
+function openPrayerForm(opday,pid){
+  const p=PRAYERS.find(x=>x.id===pid);
+  if(!p)return;
+  editingPrayer={opday,pid};
+  const rec=prayerRec(opday,pid);
+  prayerDraft={};
+  PRAYER_FIELDS.forEach(f=>prayerDraft[f.id]=!!(rec&&rec[f.id]));
+  prayerDraft.note=(rec&&rec.note)||'';
+  const t=prayerTimes?prayerTimes[p.key]:'';
+  document.getElementById('modal-title').innerHTML=
+    `<i class="ti ${p.icon}" style="color:var(--teal)"></i> صلاة ${p.name}${t?` <span class="text-muted" style="font-weight:400">· ${fmt12(t)}</span>`:''}`;
+  renderPrayerForm();
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function renderPrayerForm(){
+  const d=prayerDraft;
+  const score=PRAYER_FIELDS.reduce((s,f)=>s+(d[f.id]?1:0),0);
+  let rows=PRAYER_FIELDS.map(f=>{
+    const locked=f.needsJamaah&&!d.jamaah;
+    return`<div class="pr-row${d[f.id]?' on':''}${locked?' locked':''}" onclick="togglePrayerField('${f.id}')">
+      <div class="pr-ico"><i class="ti ${f.icon}"></i></div>
+      <div style="flex:1;min-width:0">
+        <div class="pr-label">${f.label}</div>
+        ${f.hint?`<div class="pr-hint">${f.hint}</div>`:''}
+        ${locked?`<div class="pr-hint">مرتبط بصلاة الجماعة</div>`:''}
+      </div>
+      <div class="sw"></div>
+    </div>`;
+  }).join('');
+  document.getElementById('modal-body').innerHTML=`
+    <div class="pr-quick">
+      <button class="btn btn-sm" onclick="prayerSetAll(true)"><i class="ti ti-checks"></i> علّم الكل</button>
+      <button class="btn btn-sm" onclick="prayerSetAll(false)"><i class="ti ti-eraser"></i> صفّر الكل</button>
+    </div>
+    <div style="text-align:center;margin-bottom:6px"><span class="badge ${score>=PRAYER_MAX?'badge-teal':(score>=3?'badge-amber':'badge-coral')}">النتيجة: ${score}/${PRAYER_MAX}</span></div>
+    ${rows}
+    <div class="field" style="margin-top:12px"><label>ملاحظة (اختياري)</label>
+      <input type="text" id="pr-note" value="${esc(d.note||'')}" placeholder="مثال: صليت في مسجد الحي"></div>
+    <button class="btn btn-primary" onclick="savePrayer()"><i class="ti ti-check"></i> حفظ</button>
+    <button class="btn btn-danger" style="width:100%;margin-top:8px" onclick="clearPrayer()"><i class="ti ti-trash"></i> مسح تسجيل الصلاة</button>
+  `;
+}
+function captureNote(){
+  const n=document.getElementById('pr-note');
+  if(n)prayerDraft.note=n.value;
+}
+function togglePrayerField(fid){
+  captureNote();
+  prayerDraft[fid]=!prayerDraft[fid];
+  // لو ألغى الجماعة، البنود المرتبطة بيها تتلغي تلقائيًا (مالهاش معنى بدونها)
+  if(fid==='jamaah'&&!prayerDraft.jamaah){
+    PRAYER_FIELDS.filter(f=>f.needsJamaah).forEach(f=>prayerDraft[f.id]=false);
+  }
+  // ولو علّم تكبيرة الإحرام أو الصف الأول، يبقى صلى جماعة بالضرورة
+  if(prayerDraft[fid]&&PRAYER_FIELDS.find(f=>f.id===fid&&f.needsJamaah))prayerDraft.jamaah=true;
+  renderPrayerForm();
+}
+function prayerSetAll(v){
+  captureNote();
+  PRAYER_FIELDS.forEach(f=>prayerDraft[f.id]=v);
+  renderPrayerForm();
+}
+function savePrayer(){
+  captureNote();
+  const{opday,pid}=editingPrayer;
+  const day=getDay(opday);
+  const rec={savedAt:Date.now(),note:(prayerDraft.note||'').trim()};
+  PRAYER_FIELDS.forEach(f=>rec[f.id]=!!prayerDraft[f.id]);
+  day.prayers[pid]=rec;
+  saveDB();closeModal();refreshPrayerViews();
+}
+function clearPrayer(){
+  if(!confirm('مسح تسجيل الصلاة دي؟'))return;
+  const{opday,pid}=editingPrayer;
+  delete getDay(opday).prayers[pid];
+  saveDB();closeModal();refreshPrayerViews();
+}
+function refreshPrayerViews(){
+  renderPrayerStrips();
+  if(document.getElementById('screen-log').classList.contains('active'))renderLog();
+  if(document.getElementById('screen-week').classList.contains('active'))renderWeek();
+}
+
 function deleteTaskPermanently(opday,id){
   const day=getDay(opday);
   day.tasks=day.tasks.filter(t=>t.id!==id);
@@ -647,6 +951,7 @@ function renderToday(){
   document.getElementById('st-done').textContent=doneCount+'/'+total;
   document.getElementById('st-mins').textContent=fmtDur(totalMinutes(opday));
   document.getElementById('st-pct').textContent=(total?Math.round(doneCount/total*100):0)+'%';
+  renderPrayerStrips();
 
   // أزرار أعلى الشاشة: إضافة مهمة + إنشاء اليوم من قالب
   let actionsHtml=`<button class="btn" id="ob-add-task-btn" style="flex:1" onclick="openAddTask()"><i class="ti ti-plus"></i> مهمة</button>`;
@@ -679,24 +984,41 @@ function renderToday(){
       const elapsed=t.startedAt?Math.round((Date.now()-t.startedAt)/60000):0;
       const isFirst=!firstTaskDone;
       if(isFirst)firstTaskDone=true;
-      html+=`<div class="task-row"${isFirst?' id="ob-task-card"':''}>
+      const subs=taskSubs(t);
+      const sDone=subsDone(t);
+      const expanded=expandedTasks.has(t.id);
+      const subsBadge=subs.length
+        ? `<span class="t-subs-badge"${isFirst?' id="ob-subs-badge"':''} onclick="event.stopPropagation();toggleSubsView('${t.id}')"><i class="ti ${expanded?'ti-chevron-up':'ti-list-check'}"></i> ${sDone}/${subs.length}</span>`
+        : `<span class="t-subs-badge empty"${isFirst?' id="ob-subs-badge"':''} onclick="event.stopPropagation();toggleSubsView('${t.id}')"><i class="ti ti-plus"></i> فرعية</span>`;
+      html+=`<div class="task-wrap">
+      <div class="task-row"${isFirst?' id="ob-task-card"':''}>
         <div class="t-main" style="cursor:pointer" onclick="openEditTask('${opday}','${t.id}')">
           <div class="t-name">${esc(t.name)}</div>
           <div class="t-sub" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
             ${t.startedAt?`<span>${running?'شغال دلوقتي':'اتسجل: '+fmtDur(elapsed)}</span>`:''}
             <span class="t-period-badge" onclick="event.stopPropagation();openPeriodPicker('${opday}','${t.id}')">${periodBadgeLabel(t)}</span>
+            ${subsBadge}
           </div>
+          ${subs.length?`<div class="t-subs-bar"><div class="t-subs-fill" style="width:${Math.round(sDone/subs.length*100)}%"></div></div>`:''}
         </div>
         <div class="t-actions">
           <button class="t-play ${running?'running':''}"${isFirst?' id="ob-start-btn"':''} onclick="${running?'timerStop()':`timerStart('${t.id}')`}"><i class="ti ${running?'ti-player-stop-filled':'ti-player-play-filled'}"></i>${running?'إيقاف':'ابدأ'}</button>
           <button class="t-done-btn"${isFirst?' id="ob-done-btn"':''} onclick="taskComplete('${opday}','${t.id}','done')" title="تم">✓</button>
           <button class="t-fail-btn"${isFirst?' id="ob-fail-btn"':''} onclick="taskComplete('${opday}','${t.id}','failed')" title="لم أنجز">✗</button>
         </div>
+      </div>
+      ${expanded?subsBlockHtml(opday,t):''}
       </div>`;
     });
     html+='</div>';
   });
   document.getElementById('today-lists').innerHTML=html;
+  // رجّع الفوكس لخانة إضافة الفرعية بعد الرندر عشان تقدر تكتب خطوات ورا بعض من غير ما تدوس تاني
+  if(focusSubInput){
+    const inp=document.getElementById('sub-inp-'+focusSubInput);
+    focusSubInput=null;
+    if(inp)inp.focus();
+  }
 }
 
 // ============ إضافة مهمة يدوية ============
@@ -726,15 +1048,70 @@ function openEditTask(opday,id){
   if(!t)return;
   editingTask={opday,id,fromArchive:false};
   let opts=GROUPS().map(g=>`<option value="${g.id}"${g.id===t.grp?' selected':''}>${esc(g.name)}</option>`).join('');
+  const subs=taskSubs(t);
+  const subRows=subs.map(s=>`<div class="sub-row" style="padding:6px 0">
+      <div class="sub-check${s.done?' on':''}" onclick="etSubToggle('${s.id}')"><i class="ti ti-check"></i></div>
+      <input type="text" value="${esc(s.name)}" style="flex:1;padding:6px 9px !important;font-size:13px !important" onchange="etSubRename('${s.id}',this.value)">
+      <button class="sub-del" onclick="etSubDelete('${s.id}')"><i class="ti ti-x"></i></button>
+    </div>`).join('');
   document.getElementById('modal-title').textContent='تعديل المهمة';
   document.getElementById('modal-body').innerHTML=`
     <div class="field"><label>المجال</label><select id="et-grp">${opts}</select></div>
     <div class="field"><label>اسم المهمة</label><input type="text" id="et-name" value="${esc(t.name)}" placeholder="مثال: مراجعة الحفظ"></div>
+    <div class="sec-title" style="margin-top:12px"><i class="ti ti-list-check"></i> الخطوات الفرعية (${subsDone(t)}/${subs.length})</div>
+    <div style="margin-bottom:8px">${subRows||'<div class="text-muted" style="padding:4px 2px">مفيش خطوات فرعية لسه — قسّم المهمة الكبيرة لخطوات صغيرة تنفّذها واحدة واحدة.</div>'}</div>
+    <div class="sub-add" style="padding:0 0 12px">
+      <input type="text" id="et-sub-new" placeholder="خطوة فرعية جديدة..." onkeydown="if(event.key==='Enter'){event.preventDefault();etSubAdd()}">
+      <button onclick="etSubAdd()"><i class="ti ti-plus"></i></button>
+    </div>
     <button class="btn btn-primary" onclick="saveEditTask()"><i class="ti ti-check"></i> حفظ التعديل</button>
     <button class="btn btn-danger" style="width:100%;margin-top:8px" onclick="deleteActiveTask()"><i class="ti ti-trash"></i> حذف المهمة</button>
   `;
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(()=>document.getElementById('et-name').focus(),50);
+}
+// إدارة الخطوات الفرعية من داخل مودال التعديل
+// بنحفظ الاسم والمجال المكتوبين حالياً قبل ما نعيد بناء المودال، عشان مفيش تعديل يضيع
+function etSyncFields(){
+  const t=findTask(editingTask.opday,editingTask.id);
+  if(!t)return null;
+  const nameEl=document.getElementById('et-name');
+  const grpEl=document.getElementById('et-grp');
+  if(nameEl&&nameEl.value.trim())t.name=nameEl.value.trim();
+  if(grpEl)t.grp=grpEl.value;
+  return t;
+}
+function etRefresh(){
+  saveDB();
+  if(editingTask.fromArchive)openEditArchivedTask(editingTask.opday,editingTask.id);
+  else openEditTask(editingTask.opday,editingTask.id);
+  renderToday();
+}
+function etSubAdd(){
+  const t=etSyncFields();if(!t)return;
+  const inp=document.getElementById('et-sub-new');
+  const v=inp?inp.value.trim():'';
+  if(!v)return;
+  taskSubs(t).push({id:uuid(),name:v,done:false});
+  etRefresh();
+  setTimeout(()=>{const e=document.getElementById('et-sub-new');if(e)e.focus();},60);
+}
+function etSubToggle(sid){
+  const t=etSyncFields();if(!t)return;
+  const s=taskSubs(t).find(x=>x.id===sid);
+  if(s)s.done=!s.done;
+  etRefresh();
+}
+function etSubRename(sid,v){
+  const t=findTask(editingTask.opday,editingTask.id);if(!t)return;
+  const s=taskSubs(t).find(x=>x.id===sid);
+  if(s&&v.trim())s.name=v.trim();
+  saveDB();renderToday();
+}
+function etSubDelete(sid){
+  const t=etSyncFields();if(!t)return;
+  t.subs=taskSubs(t).filter(x=>x.id!==sid);
+  etRefresh();
 }
 function saveEditTask(){
   const t=findTask(editingTask.opday,editingTask.id);
@@ -785,7 +1162,7 @@ function applyTemplate(tid){
   if(!tpl)return;
   const opday=getCurrentOperationalDay();
   tpl.items.sort((a,b)=>a.order-b.order).forEach(it=>{
-    createTask(opday,it.grp,it.name);
+    createTask(opday,it.grp,it.name,null,it.subs||[]);
   });
   saveDB();closeModal();renderToday();
 }
@@ -801,10 +1178,20 @@ function openTemplateManager(){
         <button class="act-del" onclick="tplDelete('${tpl.id}')"><i class="ti ti-trash"></i></button>
       </div>
       ${tpl.items.map((it,i)=>`
+        <div class="tpl-item-wrap">
         <div class="tpl-item">
           <select onchange="tplItemGrp('${tpl.id}',${i},this.value)">${GROUPS().map(g=>`<option value="${g.id}"${g.id===it.grp?' selected':''}>${esc(g.name)}</option>`).join('')}</select>
           <input type="text" value="${esc(it.name)}" placeholder="اسم المهمة" onchange="tplItemName('${tpl.id}',${i},this.value)">
           <button class="act-del" onclick="tplItemDelete('${tpl.id}',${i})"><i class="ti ti-x"></i></button>
+        </div>
+        <div class="tpl-subs">
+          ${(it.subs||[]).map((s,si)=>`<div class="tpl-sub-item">
+            <i class="ti ti-corner-down-left" style="font-size:13px;color:var(--text-hint)"></i>
+            <input type="text" value="${esc(s)}" placeholder="خطوة فرعية" onchange="tplSubName('${tpl.id}',${i},${si},this.value)">
+            <button class="act-del" onclick="tplSubDelete('${tpl.id}',${i},${si})"><i class="ti ti-x"></i></button>
+          </div>`).join('')}
+          <button class="btn btn-sm" style="margin-top:4px" onclick="tplSubAdd('${tpl.id}',${i})"><i class="ti ti-plus"></i> خطوة فرعية</button>
+        </div>
         </div>`).join('')}
       <button class="btn btn-sm" style="margin-top:6px" onclick="tplItemAdd('${tpl.id}')"><i class="ti ti-plus"></i> مهمة للقالب</button>
     </div>`;
@@ -827,7 +1214,29 @@ function tplDelete(id){
 function tplItemAdd(tid){
   const tpl=db.templates.find(t=>t.id===tid);
   if(!tpl)return;
-  tpl.items.push({grp:GROUPS()[0].id,name:'',order:tpl.items.length});
+  tpl.items.push({grp:GROUPS()[0].id,name:'',order:tpl.items.length,subs:[]});
+  saveDB();openTemplateManager();
+}
+// الخطوات الفرعية داخل القالب — مخزّنة كنصوص بسيطة، وبتتحوّل لمهام فرعية حقيقية وقت تطبيق القالب
+function tplItem(tid,i){
+  const tpl=db.templates.find(t=>t.id===tid);
+  if(!tpl||!tpl.items[i])return null;
+  if(!Array.isArray(tpl.items[i].subs))tpl.items[i].subs=[];
+  return tpl.items[i];
+}
+function tplSubAdd(tid,i){
+  const it=tplItem(tid,i);if(!it)return;
+  it.subs.push('');
+  saveDB();openTemplateManager();
+}
+function tplSubName(tid,i,si,v){
+  const it=tplItem(tid,i);if(!it)return;
+  it.subs[si]=v.trim();
+  saveDB();
+}
+function tplSubDelete(tid,i,si){
+  const it=tplItem(tid,i);if(!it)return;
+  it.subs.splice(si,1);
   saveDB();openTemplateManager();
 }
 function tplItemName(tid,i,v){const tpl=db.templates.find(t=>t.id===tid);if(tpl&&tpl.items[i]){tpl.items[i].name=v.trim();saveDB();}}
@@ -919,7 +1328,7 @@ function renderArchive(){
       <div class="arc-dot" style="background:${color}"></div>
       <div class="arc-main" style="cursor:pointer" onclick="openEditArchivedTask('${t.opday}','${t.id}')">
         <div class="arc-name">${esc(t.name)}</div>
-        <div class="arc-sub">${g?esc(g.name):''} · ${esc(t.hijriDisplay||'')}${t.durationMin?' · '+fmtDur(t.durationMin):''}</div>
+        <div class="arc-sub">${g?esc(g.name):''} · ${esc(t.hijriDisplay||'')}${t.durationMin?' · '+fmtDur(t.durationMin):''}${(t.subs&&t.subs.length)?' · خطوات: '+t.subs.filter(s=>s.done).length+'/'+t.subs.length:''}</div>
       </div>
       <span class="badge ${t.status==='done'?'badge-teal':'badge-coral'}">${t.status==='done'?'منجزة':'غير منجزة'}</span>
       <button class="arc-del" onclick="event.stopPropagation();archiveDelete('${t.opday}','${t.id}')"><i class="ti ti-trash"></i></button>
@@ -986,6 +1395,9 @@ function renderLog(){
   const pt=prayerTimes;
   document.getElementById('log-pt-info').innerHTML=
     `${esc(getDay(selectedOpday).hijriDisplay||'')}<br>فجر ${fmt12(pt.Fajr)} · ظهر ${fmt12(pt.Dhuhr)} · عصر ${fmt12(pt.Asr)} · مغرب ${fmt12(pt.Maghrib)} · عشاء ${fmt12(pt.Isha)}`;
+  // شريط الصلوات الخمس لليوم المختار — الضغط على أي صلاة بيفتح نافذة تسجيل تفاصيلها
+  document.getElementById('log-prayers').innerHTML=prayerStripHtml(selectedOpday,isToday?currentPid:null);
+  document.getElementById('log-pr-total').textContent=dayPrayerScore(selectedOpday)+'/'+(PRAYERS.length*PRAYER_MAX);
   const periods=periodList();
   document.getElementById('period-tabs').innerHTML=PRAYER_PERIODS.map(p=>{
     const times=periods.find(x=>x.id===p.id);
@@ -1088,6 +1500,18 @@ function renderPeriodTimeline(opday,isToday,currentPid){
       <div class="cal-block-time">${fmt12(l.start)}–${fmt12(l.end)}${cols===1?' · '+fmtDur(logDur(l)):''}</div>
     </div>`;
   });
+  // الصلاة اللي بتفتح الفترة دي (مثلاً فترة المغرب→العشاء بتبدأ بصلاة المغرب)
+  const openingPrayer=PRAYERS.find(p=>p.period===activePeriodId);
+  let prayerBtn='';
+  if(openingPrayer){
+    const rec=prayerRec(opday,openingPrayer.id);
+    const sc=prayerScore(rec);
+    prayerBtn=`<button class="pr-period-btn" onclick="openPrayerForm('${opday}','${openingPrayer.id}')">
+      <i class="ti ${openingPrayer.icon}"></i>
+      <span style="flex:1">تسجيل صلاة ${openingPrayer.name}</span>
+      <span class="badge ${rec?(sc>=PRAYER_MAX?'badge-teal':(sc>=3?'badge-amber':'badge-coral')):''}" ${rec?'':'style="background:var(--gray-light);color:var(--text-hint)"'}>${rec?sc+'/'+PRAYER_MAX:'لم تُسجَّل'}</span>
+    </button>`;
+  }
   document.getElementById('log-timeline').innerHTML=`
   <div class="card" style="padding:0;overflow:hidden${isCurrent?';border-color:var(--teal);border-width:1.5px':''}">
     <div class="period-summary" style="padding:14px 14px 10px">
@@ -1097,6 +1521,7 @@ function renderPeriodTimeline(opday,isToday,currentPid){
         <div class="period-summary-range">${fmt12(period.start)}–${fmt12(period.end)}${period.nextDay?' (الغد)':''} · مسجّل: <b>${fmtDur(totalMin)}</b></div>
       </div>
     </div>
+    ${prayerBtn}
     <div class="cal-wrap" style="height:${axisH}px;padding:0 14px 14px">
       <div class="cal-hour-col" style="height:${axisH}px">${hourLabels}</div>
       <div class="cal-done-col" style="height:${axisH}px">${hourLines}${blocks}${nowLine}</div>
@@ -1267,6 +1692,42 @@ function renderWeek(){
   });
   document.getElementById('week-tasks').innerHTML=h1;
   document.getElementById('week-time').innerHTML=h2;
+
+  // ============ إحصائيات الصلوات لآخر 7 أيام ============
+  const MAXDAY=PRAYERS.length*PRAYER_MAX;
+  let h3='';
+  const tally={};PRAYER_FIELDS.forEach(f=>tally[f.id]=0);
+  let recorded=0;
+  days.forEach(({civil,opday})=>{
+    const[y,m,d]=civil.split('-').map(Number);
+    const dObj=new Date(y,m-1,d);
+    const lbl=(civil===civilToday?'النهارده':dayNames[dObj.getDay()])+' '+d+'/'+m;
+    let sc=0;
+    if(opday&&db.days[opday]&&db.days[opday].prayers){
+      PRAYERS.forEach(p=>{
+        const rec=db.days[opday].prayers[p.id];
+        if(!rec)return;
+        recorded++;
+        sc+=prayerScore(rec);
+        PRAYER_FIELDS.forEach(f=>{if(rec[f.id])tally[f.id]++;});
+      });
+    }
+    const pct=Math.round(sc/MAXDAY*100);
+    h3+=`<div class="week-day">
+      <div class="wd-date">${lbl}</div>
+      <div class="wd-bar"><div class="wd-fill" style="width:${pct}%;background:${pct>=80?'var(--teal)':(pct>=50?'#BA7517':'var(--coral)')}"></div></div>
+      <div class="wd-num" style="color:${pct>=80?'var(--teal)':(pct>=50?'#BA7517':'var(--coral)')}">${sc}/${MAXDAY}</div>
+    </div>`;
+  });
+  document.getElementById('week-prayers').innerHTML=h3;
+  const totalSlots=days.length*PRAYERS.length;
+  document.getElementById('week-prayers-sum').innerHTML=
+    `<div class="text-muted" style="margin-bottom:6px">صلوات مسجّلة: <b>${recorded}</b> من ${totalSlots}</div>
+     <div style="display:flex;flex-wrap:wrap;gap:6px">`+
+    PRAYER_FIELDS.map(f=>{
+      const pct=totalSlots?Math.round(tally[f.id]/totalSlots*100):0;
+      return`<span class="badge ${pct>=80?'badge-teal':(pct>=50?'badge-amber':'badge-coral')}" style="font-size:10.5px">${f.label}: ${tally[f.id]}/${totalSlots}</span>`;
+    }).join('')+`</div>`;
 }
 
 function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
@@ -1594,6 +2055,11 @@ const OB_STEPS=[
   {targetId:'ob-fail-btn',tab:'today',title:'زر لم يتم الإنجاز',
     text:'استخدم هذا الخيار عندما تقرر عدم إكمال المهمة في هذا اليوم. تُحفظ داخل المهام المنتهية ومميزة باللون الأحمر حتى تقدر تراجعها لاحقًا.',
     fallback:{title:'زر لم يتم الإنجاز',text:'استخدم هذا الخيار عندما تقرر عدم إكمال المهمة في هذا اليوم. تُحفظ داخل المهام المنتهية ومميزة باللون الأحمر حتى تقدر تراجعها لاحقًا.'}},
+  {targetId:'ob-subs-badge',tab:'today',title:'الخطوات الفرعية',
+    text:'أي مهمة كبيرة تقدر تقسّمها لخطوات صغيرة. دوس على التاج ده عشان تفتح قائمة الخطوات، وتضيف أو تعلّم اللي خلصته. لما كل الخطوات تخلص، التطبيق هيسألك تقفل المهمة الأساسية أوتوماتيك.',
+    fallback:{title:'الخطوات الفرعية',text:'أي مهمة كبيرة تقدر تقسّمها لخطوات صغيرة تنفّذها واحدة واحدة. ضيف مهمة الأول، وهتلاقي جنبها تاج «فرعية» تفتح منه القائمة. وتقدر كمان تجهّز الخطوات دي مسبقًا جوه القالب.'}},
+  {targetId:'ob-prayer-strip',tab:'today',title:'متابعة الصلوات',
+    text:'دوس على أي صلاة من الشريط ده (أو من تبويب السجل) عشان تسجّل: صليتها في وقتها؟ جماعة؟ أدركت تكبيرة الإحرام والصف الأول؟ صليت الراتبة؟ قرأت الورد؟ ولون كل صلاة بيتغير حسب نتيجتها، وتلاقي تقرير أسبوعي كامل في تبويب الأسبوع.'},
   {targetId:'ob-nav-archive',tab:'today',title:'قسم المهام المنتهية (الأرشيف)',
     text:'هذا القسم يمثل سجل كل أيامك. من خلاله تقدر تراجع: المهام المنجزة، المهام غير المنجزة، أوقات التنفيذ، ومدة كل مهمة.'},
   {targetId:'ob-template-btn',tab:'today',title:'Templates (القوالب)',
