@@ -361,8 +361,16 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
       <div class="sec-title" style="margin-bottom:8px"><i class="ti ti-building-mosque" style="color:var(--teal)"></i> صلوات اليوم <span id="today-pr-total" style="margin-right:auto;font-weight:800;color:var(--teal)"></span></div>
       <div class="pr-strip" id="today-prayers"></div>
     </div>
+    <div class="card" style="padding:10px 10px;margin-bottom:10px">
+      <div class="sec-title" style="margin-bottom:6px"><i class="ti ti-calendar" style="color:var(--teal)"></i> عرض مهام يوم</div>
+      <div style="display:flex;gap:8px">
+        <input type="date" id="today-date-filter" onchange="changeTodayFilter(this.value)" style="flex:1">
+        <button class="btn btn-sm" onclick="resetTodayFilter()"><i class="ti ti-calendar-due"></i> اليوم</button>
+      </div>
+    </div>
     <div id="today-actions" style="display:flex;gap:8px;margin-bottom:10px"></div>
     <div id="today-lists"></div>
+    <div id="today-adhkar"></div>
   </div>
 
   <!-- السجل -->
@@ -477,6 +485,43 @@ const PRAYER_PERIODS=[
   {id:'dhuhr-asr',label:'الظهر → العصر',icon:'ti-sun'},
   {id:'asr-maghrib',label:'العصر → المغرب',icon:'ti-sunset-2'}
 ];
+// أذكار الصباح تظهر داخل فترة الفجر، وأذكار المساء تظهر داخل فترة العصر
+const ADHKAR={
+  'fajr-dhuhr':{title:'أذكار الصباح',icon:'ti-sunrise',items:[
+    'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.',
+    'اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ.',
+    'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ (دعاء سيد الاستغفار).',
+    'رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا.',
+    'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ.',
+    'حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ (× 7).',
+    'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ (× 3).',
+    'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ (× 100).'
+  ]},
+  'asr-maghrib':{title:'أذكار المساء',icon:'ti-sunset-2',items:[
+    'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.',
+    'اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ.',
+    'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ (دعاء سيد الاستغفار).',
+    'رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا.',
+    'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ.',
+    'حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ (× 7).',
+    'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ (× 3).',
+    'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ (× 100).'
+  ]}
+};
+let adhkarExpanded=false;
+function adhkarBlockHtml(pid){
+  const a=ADHKAR[pid];
+  if(!a)return'';
+  const rows=a.items.map((txt,i)=>`<div style="padding:9px 0;border-bottom:.5px solid var(--border);font-size:13.5px;line-height:1.9">${i+1}. ${esc(txt)}</div>`).join('');
+  return`<div class="card">
+    <div class="sec-title" style="cursor:pointer" onclick="toggleAdhkar()">
+      <i class="ti ${a.icon}" style="color:var(--teal)"></i> ${a.title}
+      <i class="ti ${adhkarExpanded?'ti-chevron-up':'ti-chevron-down'}" style="margin-right:auto"></i>
+    </div>
+    ${adhkarExpanded?rows:`<div class="text-muted">دوس لعرض ${esc(a.title)} (${a.items.length})</div>`}
+  </div>`;
+}
+function toggleAdhkar(){adhkarExpanded=!adhkarExpanded;renderToday();}
 // ============ الصلوات الخمس ============
 // الترتيب هنا بترتيب اليوم التشغيلي (اللي بيبدأ من المغرب) مش الترتيب الميلادي
 const PRAYERS=[
@@ -605,6 +650,22 @@ function ensureOpday(civilDs){
   const opday='opday_'+db.dayIndex.seq;
   db.dayIndex.civilMap[civilDs]=opday;
   return opday;
+}
+// ============ فلتر تاريخ الصفحة الرئيسية ============
+// null يعني "اليوم التشغيلي الحالي"؛ غير كده بيبقى تاريخ مدني (YYYY-MM-DD) مختار يدويًا
+let todayFilterCivilDate=null;
+function todayFilterOpday(){
+  if(!todayFilterCivilDate)return getCurrentOperationalDay();
+  return ensureOpday(todayFilterCivilDate);
+}
+function changeTodayFilter(v){
+  const realOpday=getCurrentOperationalDay();
+  todayFilterCivilDate=(v&&v!==opdayToCivilDate(realOpday))?v:null;
+  renderToday();
+}
+function resetTodayFilter(){
+  todayFilterCivilDate=null;
+  renderToday();
 }
 function getDay(opday){
   if(!db.days[opday])db.days[opday]={tasks:[],logs:[],prayers:{},hijriDisplay:hijriStrForOpday(opday)};
@@ -839,8 +900,9 @@ function prayerStripHtml(opday,currentPid){
   }).join('');
 }
 function renderPrayerStrips(){
-  const opday=getCurrentOperationalDay();
-  const currentPid=getPeriod(nowHM());
+  const opday=todayFilterOpday();
+  const isRealToday=opday===getCurrentOperationalDay();
+  const currentPid=isRealToday?getPeriod(nowHM()):null;
   const el=document.getElementById('today-prayers');
   if(el){
     el.innerHTML=prayerStripHtml(opday,currentPid);
@@ -941,7 +1003,11 @@ function deleteTaskPermanently(opday,id){
 
 // ============ شاشة اليوم ============
 function renderToday(){
-  const opday=getCurrentOperationalDay();
+  const realOpday=getCurrentOperationalDay();
+  const opday=todayFilterOpday();
+  const isRealToday=opday===realOpday;
+  const dateFilterEl=document.getElementById('today-date-filter');
+  if(dateFilterEl)dateFilterEl.value=todayFilterCivilDate||opdayToCivilDate(realOpday);
   const day=getDay(opday);
   document.getElementById('h-hijri').textContent=day.hijriDisplay;
   const acts=activeTasks(opday);
@@ -952,6 +1018,11 @@ function renderToday(){
   document.getElementById('st-mins').textContent=fmtDur(totalMinutes(opday));
   document.getElementById('st-pct').textContent=(total?Math.round(doneCount/total*100):0)+'%';
   renderPrayerStrips();
+  const adhkarEl=document.getElementById('today-adhkar');
+  if(adhkarEl){
+    const pidNow=isRealToday?getPeriod(nowHM()):null;
+    adhkarEl.innerHTML=(pidNow&&ADHKAR[pidNow])?adhkarBlockHtml(pidNow):'';
+  }
 
   // أزرار أعلى الشاشة: إضافة مهمة + إنشاء اليوم من قالب
   let actionsHtml=`<button class="btn" id="ob-add-task-btn" style="flex:1" onclick="openAddTask()"><i class="ti ti-plus"></i> مهمة</button>`;
@@ -1025,9 +1096,16 @@ function renderToday(){
 function openAddTask(){
   document.getElementById('modal-title').textContent='مهمة جديدة';
   let opts=GROUPS().map(g=>`<option value="${g.id}">${esc(g.name)}</option>`).join('');
+  let periodOpts='<option value="">تلقائي (حسب وقت الإنشاء)</option>'+
+    PRAYER_PERIODS.map(p=>`<option value="${p.id}">${p.label.split(' → ')[0]}</option>`).join('');
+  const defDate=todayFilterCivilDate||opdayToCivilDate(getCurrentOperationalDay());
   document.getElementById('modal-body').innerHTML=`
     <div class="field"><label>المجال</label><select id="at-grp">${opts}</select></div>
     <div class="field"><label>اسم المهمة</label><input type="text" id="at-name" placeholder="مثال: مراجعة الحفظ"></div>
+    <div class="row-2">
+      <div class="field"><label>التاريخ</label><input type="date" id="at-date" value="${defDate}"></div>
+      <div class="field"><label>الفترة</label><select id="at-period">${periodOpts}</select></div>
+    </div>
     <button class="btn btn-primary" onclick="saveNewTask()"><i class="ti ti-check"></i> أضف</button>
   `;
   document.getElementById('modal-overlay').classList.add('open');
@@ -1037,8 +1115,17 @@ function saveNewTask(){
   const grp=document.getElementById('at-grp').value;
   const name=document.getElementById('at-name').value.trim();
   if(!name){alert('اكتب اسم المهمة');return;}
-  createTask(getCurrentOperationalDay(),grp,name);
-  saveDB();closeModal();renderToday();
+  const dateEl=document.getElementById('at-date');
+  const civilDs=(dateEl&&dateEl.value)||opdayToCivilDate(getCurrentOperationalDay());
+  const periodEl=document.getElementById('at-period');
+  const period=periodEl?periodEl.value||null:null;
+  const opday=ensureOpday(civilDs);
+  createTask(opday,grp,name,period);
+  saveDB();closeModal();
+  // نتأكد إن فلتر الصفحة الرئيسية بيعرض نفس يوم المهمة اللي اتضافت عشان تظهر فورًا
+  const realOpday=getCurrentOperationalDay();
+  todayFilterCivilDate=(civilDs!==opdayToCivilDate(realOpday))?civilDs:null;
+  renderToday();
 }
 
 // ============ تعديل/حذف مهمة (نشطة أو منتهية) ============
@@ -1058,6 +1145,7 @@ function openEditTask(opday,id){
   document.getElementById('modal-body').innerHTML=`
     <div class="field"><label>المجال</label><select id="et-grp">${opts}</select></div>
     <div class="field"><label>اسم المهمة</label><input type="text" id="et-name" value="${esc(t.name)}" placeholder="مثال: مراجعة الحفظ"></div>
+    <div class="field"><label>التاريخ</label><input type="date" id="et-date" value="${opdayToCivilDate(opday)}"></div>
     <div class="sec-title" style="margin-top:12px"><i class="ti ti-list-check"></i> الخطوات الفرعية (${subsDone(t)}/${subs.length})</div>
     <div style="margin-bottom:8px">${subRows||'<div class="text-muted" style="padding:4px 2px">مفيش خطوات فرعية لسه — قسّم المهمة الكبيرة لخطوات صغيرة تنفّذها واحدة واحدة.</div>'}</div>
     <div class="sub-add" style="padding:0 0 12px">
@@ -1114,7 +1202,7 @@ function etSubDelete(sid){
   etRefresh();
 }
 function saveEditTask(){
-  const t=findTask(editingTask.opday,editingTask.id);
+  let t=findTask(editingTask.opday,editingTask.id);
   if(!t)return;
   const name=document.getElementById('et-name').value.trim();
   if(!name){alert('اكتب اسم المهمة');return;}
@@ -1128,8 +1216,33 @@ function saveEditTask(){
     const dur=parseInt(durEl.value,10);
     t.durationMin=isNaN(dur)||dur<0?0:dur;
   }
+  // تغيير تاريخ المهمة: بينقلها من يوم تشغيلي لتاني (متاح فقط للمهام النشطة، مش الأرشيف)
+  const dateEl=document.getElementById('et-date');
+  let newCivilDs=null;
+  if(dateEl&&!editingTask.fromArchive){
+    const currentDs=opdayToCivilDate(editingTask.opday);
+    if(dateEl.value&&dateEl.value!==currentDs){
+      newCivilDs=dateEl.value;
+      const fromOpday=editingTask.opday;
+      const toOpday=ensureOpday(newCivilDs);
+      const fromDay=getDay(fromOpday);
+      fromDay.tasks=fromDay.tasks.filter(x=>x.id!==t.id);
+      const toDay=getDay(toOpday);
+      t.hijriDisplay=toDay.hijriDisplay;
+      toDay.tasks.push(t);
+      if(timer&&timer.taskId===t.id&&timer.opday===fromOpday)timer.opday=toOpday;
+      editingTask.opday=toOpday;
+    }
+  }
   saveDB();closeModal();
-  if(editingTask.fromArchive)renderArchive();else renderToday();
+  if(editingTask.fromArchive){renderArchive();}
+  else{
+    if(newCivilDs){
+      const realOpday=getCurrentOperationalDay();
+      todayFilterCivilDate=(newCivilDs!==opdayToCivilDate(realOpday))?newCivilDs:null;
+    }
+    renderToday();
+  }
 }
 function deleteActiveTask(){
   if(!confirm('متأكد من حذف المهمة؟ لو فيها وقت مسجّل أو مؤقت شغال، هيتم إيقافه أولاً.'))return;
@@ -1162,7 +1275,7 @@ function applyTemplate(tid){
   if(!tpl)return;
   const opday=getCurrentOperationalDay();
   tpl.items.sort((a,b)=>a.order-b.order).forEach(it=>{
-    createTask(opday,it.grp,it.name,null,it.subs||[]);
+    createTask(opday,it.grp,it.name,it.period||null,it.subs||[]);
   });
   saveDB();closeModal();renderToday();
 }
@@ -1183,6 +1296,12 @@ function openTemplateManager(){
           <select onchange="tplItemGrp('${tpl.id}',${i},this.value)">${GROUPS().map(g=>`<option value="${g.id}"${g.id===it.grp?' selected':''}>${esc(g.name)}</option>`).join('')}</select>
           <input type="text" value="${esc(it.name)}" placeholder="اسم المهمة" onchange="tplItemName('${tpl.id}',${i},this.value)">
           <button class="act-del" onclick="tplItemDelete('${tpl.id}',${i})"><i class="ti ti-x"></i></button>
+        </div>
+        <div class="tpl-item" style="margin-top:4px">
+          <select style="flex:1" onchange="tplItemPeriod('${tpl.id}',${i},this.value)">
+            <option value="">فترة: تلقائي</option>
+            ${PRAYER_PERIODS.map(p=>`<option value="${p.id}"${it.period===p.id?' selected':''}>فترة: ${p.label.split(' → ')[0]}</option>`).join('')}
+          </select>
         </div>
         <div class="tpl-subs">
           ${(it.subs||[]).map((s,si)=>`<div class="tpl-sub-item">
@@ -1214,9 +1333,10 @@ function tplDelete(id){
 function tplItemAdd(tid){
   const tpl=db.templates.find(t=>t.id===tid);
   if(!tpl)return;
-  tpl.items.push({grp:GROUPS()[0].id,name:'',order:tpl.items.length,subs:[]});
+  tpl.items.push({grp:GROUPS()[0].id,name:'',order:tpl.items.length,subs:[],period:null});
   saveDB();openTemplateManager();
 }
+function tplItemPeriod(tid,i,v){const tpl=db.templates.find(t=>t.id===tid);if(tpl&&tpl.items[i])tpl.items[i].period=v||null;saveDB();}
 // الخطوات الفرعية داخل القالب — مخزّنة كنصوص بسيطة، وبتتحوّل لمهام فرعية حقيقية وقت تطبيق القالب
 function tplItem(tid,i){
   const tpl=db.templates.find(t=>t.id===tid);
@@ -1527,6 +1647,7 @@ function renderPeriodTimeline(opday,isToday,currentPid){
       <div class="cal-done-col" style="height:${axisH}px">${hourLines}${blocks}${nowLine}</div>
     </div>
   </div>
+  ${adhkarBlockHtml(activePeriodId)}
   <button class="btn btn-primary" style="margin-top:10px" onclick="openLogForm('${opday}',-1)"><i class="ti ti-plus"></i> تسجيل جلسة</button>
   <div class="text-muted" style="text-align:center;margin-top:6px">دوس على أي بلوك للتعديل أو الحذف</div>`;
 }
