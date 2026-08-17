@@ -369,10 +369,19 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
         <input type="date" id="today-date-filter" onchange="changeTodayFilter(this.value)" style="flex:1">
         <button class="btn btn-sm" onclick="resetTodayFilter()"><i class="ti ti-calendar-due"></i> اليوم</button>
       </div>
+      <div style="margin-top:8px">
+        <select id="today-period-filter" onchange="changePeriodFilter(this.value)">
+          <option value="">كل الفترات</option>
+          <option value="maghrib-isha">المغرب → العشاء</option>
+          <option value="isha-fajr">العشاء → الفجر</option>
+          <option value="fajr-dhuhr">الفجر → الظهر</option>
+          <option value="dhuhr-asr">الظهر → العصر</option>
+          <option value="asr-maghrib">العصر → المغرب</option>
+        </select>
+      </div>
     </div>
     <div id="today-actions" style="display:flex;gap:8px;margin-bottom:10px"></div>
     <div id="today-lists"></div>
-    <div id="today-adhkar"></div>
   </div>
 
   <!-- السجل -->
@@ -487,43 +496,6 @@ const PRAYER_PERIODS=[
   {id:'dhuhr-asr',label:'الظهر → العصر',icon:'ti-sun'},
   {id:'asr-maghrib',label:'العصر → المغرب',icon:'ti-sunset-2'}
 ];
-// أذكار الصباح تظهر داخل فترة الفجر، وأذكار المساء تظهر داخل فترة العصر
-const ADHKAR={
-  'fajr-dhuhr':{title:'أذكار الصباح',icon:'ti-sunrise',items:[
-    'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.',
-    'اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ.',
-    'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ (دعاء سيد الاستغفار).',
-    'رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا.',
-    'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ.',
-    'حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ (× 7).',
-    'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ (× 3).',
-    'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ (× 100).'
-  ]},
-  'asr-maghrib':{title:'أذكار المساء',icon:'ti-sunset-2',items:[
-    'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.',
-    'اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ.',
-    'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ (دعاء سيد الاستغفار).',
-    'رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا.',
-    'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ.',
-    'حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ (× 7).',
-    'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ (× 3).',
-    'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ (× 100).'
-  ]}
-};
-let adhkarExpanded=false;
-function adhkarBlockHtml(pid){
-  const a=ADHKAR[pid];
-  if(!a)return'';
-  const rows=a.items.map((txt,i)=>`<div style="padding:9px 0;border-bottom:.5px solid var(--border);font-size:13.5px;line-height:1.9">${i+1}. ${esc(txt)}</div>`).join('');
-  return`<div class="card">
-    <div class="sec-title" style="cursor:pointer" onclick="toggleAdhkar()">
-      <i class="ti ${a.icon}" style="color:var(--teal)"></i> ${a.title}
-      <i class="ti ${adhkarExpanded?'ti-chevron-up':'ti-chevron-down'}" style="margin-right:auto"></i>
-    </div>
-    ${adhkarExpanded?rows:`<div class="text-muted">دوس لعرض ${esc(a.title)} (${a.items.length})</div>`}
-  </div>`;
-}
-function toggleAdhkar(){adhkarExpanded=!adhkarExpanded;renderToday();}
 // ============ الصلوات الخمس ============
 // الترتيب هنا بترتيب اليوم التشغيلي (اللي بيبدأ من المغرب) مش الترتيب الميلادي
 const PRAYERS=[
@@ -543,6 +515,15 @@ const PRAYER_FIELDS=[
   {id:'wird',label:'قرأت ورد الصلاة',icon:'ti-book-2',hint:'الأذكار والورد المرتبط بالصلاة'}
 ];
 const PRAYER_MAX=PRAYER_FIELDS.length;
+// بند "ورد الصلاة" بياخد تسمية خاصة في الفجر والعصر (أذكار الصباح/المساء) بنفس آلية العلامة العادية
+function prayerFieldsFor(pid){
+  return PRAYER_FIELDS.map(f=>{
+    if(f.id!=='wird')return f;
+    if(pid==='fajr')return{...f,label:'أذكار الصباح',icon:'ti-sunrise',hint:''};
+    if(pid==='asr')return{...f,label:'أذكار المساء',icon:'ti-sunset-2',hint:''};
+    return f;
+  });
+}
 
 // ============ معرّفات فريدة ============
 function uuid(){
@@ -656,6 +637,7 @@ function ensureOpday(civilDs){
 // ============ فلتر تاريخ الصفحة الرئيسية ============
 // null يعني "اليوم التشغيلي الحالي"؛ غير كده بيبقى تاريخ مدني (YYYY-MM-DD) مختار يدويًا
 let todayFilterCivilDate=null;
+let todayFilterPeriod=null; // null يعني كل الفترات
 function todayFilterOpday(){
   if(!todayFilterCivilDate)return getCurrentOperationalDay();
   return ensureOpday(todayFilterCivilDate);
@@ -665,8 +647,13 @@ function changeTodayFilter(v){
   todayFilterCivilDate=(v&&v!==opdayToCivilDate(realOpday))?v:null;
   renderToday();
 }
+function changePeriodFilter(v){
+  todayFilterPeriod=v||null;
+  renderToday();
+}
 function resetTodayFilter(){
   todayFilterCivilDate=null;
+  todayFilterPeriod=null;
   renderToday();
 }
 function getDay(opday){
@@ -930,8 +917,9 @@ function openPrayerForm(opday,pid){
 }
 function renderPrayerForm(){
   const d=prayerDraft;
-  const score=PRAYER_FIELDS.reduce((s,f)=>s+(d[f.id]?1:0),0);
-  let rows=PRAYER_FIELDS.map(f=>{
+  const fields=prayerFieldsFor(editingPrayer?editingPrayer.pid:null);
+  const score=fields.reduce((s,f)=>s+(d[f.id]?1:0),0);
+  let rows=fields.map(f=>{
     const locked=f.needsJamaah&&!d.jamaah;
     return`<div class="pr-row${d[f.id]?' on':''}${locked?' locked':''}" onclick="togglePrayerField('${f.id}')">
       <div class="pr-ico"><i class="ti ${f.icon}"></i></div>
@@ -1020,11 +1008,8 @@ function renderToday(){
   document.getElementById('st-mins').textContent=fmtDur(totalMinutes(opday));
   document.getElementById('st-pct').textContent=(total?Math.round(doneCount/total*100):0)+'%';
   renderPrayerStrips();
-  const adhkarEl=document.getElementById('today-adhkar');
-  if(adhkarEl){
-    const pidNow=isRealToday?getPeriod(nowHM()):null;
-    adhkarEl.innerHTML=(pidNow&&ADHKAR[pidNow])?adhkarBlockHtml(pidNow):'';
-  }
+  const periodFilterEl=document.getElementById('today-period-filter');
+  if(periodFilterEl)periodFilterEl.value=todayFilterPeriod||'';
 
   // أزرار أعلى الشاشة: إضافة مهمة + إنشاء اليوم من قالب
   let actionsHtml=`<button class="btn" id="ob-add-task-btn" style="flex:1" onclick="openAddTask()"><i class="ti ti-plus"></i> مهمة</button>`;
@@ -1037,19 +1022,21 @@ function renderToday(){
   }
   document.getElementById('today-actions').innerHTML=actionsHtml;
 
-  if(!acts.length){
+  // فلتر الفترة: بيقصر قائمة المهام المعروضة على فترة معينة بس (من غير ما يأثر على إحصائيات اليوم فوق)
+  const actsShown=todayFilterPeriod?acts.filter(t=>taskPeriod(t)===todayFilterPeriod):acts;
+  if(!actsShown.length){
     document.getElementById('today-lists').innerHTML=`
       <div class="card" style="text-align:center;padding:26px 16px">
         <i class="ti ti-clipboard-plus" style="font-size:34px;color:var(--text-hint)"></i>
-        <div style="font-weight:700;margin:10px 0 4px">مفيش مهام نشطة دلوقتي</div>
-        <div class="text-muted">ضيف مهمة جديدة أو ابدأ يومك من قالب جاهز.</div>
+        <div style="font-weight:700;margin:10px 0 4px">${todayFilterPeriod?'مفيش مهام في الفترة دي':'مفيش مهام نشطة دلوقتي'}</div>
+        <div class="text-muted">${todayFilterPeriod?'جرّب فترة تانية أو رجّع الفلتر لـ«كل الفترات».':'ضيف مهمة جديدة أو ابدأ يومك من قالب جاهز.'}</div>
       </div>`;
     return;
   }
 
   let html='';let firstTaskDone=false;
   GROUPS().forEach((g,gIdx)=>{
-    const gTasks=acts.filter(t=>t.grp===g.id);
+    const gTasks=actsShown.filter(t=>t.grp===g.id);
     if(!gTasks.length)return;
     html+=`<div class="card"${!firstTaskDone?' id="ob-group-card"':''}><div class="sec-title"${gIdx===0?' id="ob-groups-title"':''}><i class="ti ${g.icon}" style="color:${g.color}"></i> ${esc(g.name)}</div>`;
     gTasks.forEach(t=>{
@@ -1650,7 +1637,6 @@ function renderPeriodTimeline(opday,isToday,currentPid){
       <div class="cal-done-col" style="height:${axisH}px">${hourLines}${blocks}${nowLine}</div>
     </div>
   </div>
-  ${adhkarBlockHtml(activePeriodId)}
   <button class="btn btn-primary" style="margin-top:10px" onclick="openLogForm('${opday}',-1)"><i class="ti ti-plus"></i> تسجيل جلسة</button>
   <div class="text-muted" style="text-align:center;margin-top:6px">دوس على أي بلوك للتعديل أو الحذف</div>`;
 }
