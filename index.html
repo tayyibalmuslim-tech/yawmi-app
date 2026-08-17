@@ -187,12 +187,13 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
 .empty{text-align:center;color:var(--text-hint);font-size:12.5px;padding:14px 0}
 
 /* إدارة المجموعات والقوالب */
-.mg-group{border:.5px solid var(--border);border-radius:12px;padding:10px;margin-bottom:10px}
-.mg-group-head{display:flex;align-items:center;gap:6px}
-.mg-group-head input{flex:1}
-.tpl-item{display:flex;align-items:center;gap:6px;padding:5px 0}
+.mg-group{border:.5px solid var(--border);border-radius:12px;padding:12px;margin-bottom:14px;background:var(--card)}
+.mg-group-head{display:flex;align-items:center;gap:8px;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--border)}
+.mg-group-head input{flex:1;font-weight:700}
+.tpl-item{display:flex;align-items:center;gap:6px;padding:0}
 .tpl-item input[type=text]{flex:1}
 .tpl-item select{width:110px;flex-shrink:0}
+.tpl-field-label{font-size:9.5px;color:var(--text-hint);margin:0 0 3px 2px}
 
 /* ============ شاشة الحساب (Authentication) ============ */
 .auth-screen{position:fixed;inset:0;background:var(--bg);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
@@ -261,12 +262,13 @@ label{font-size:12px;color:var(--text-sec);display:block;margin-bottom:4px}
 .sub-add{display:flex;align-items:center;gap:6px;padding:4px 8px 0 0}
 .sub-add input{flex:1;padding:6px 9px !important;font-size:13px !important;border-radius:7px !important}
 .sub-add button{width:30px;height:30px;flex-shrink:0;border:none;border-radius:7px;background:var(--teal-light);color:var(--teal-text);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.tpl-subs{padding:2px 10px 4px 0;margin-right:4px;border-right:2px solid var(--border)}
-.tpl-sub-item{display:flex;align-items:center;gap:6px;padding:3px 0}
+.tpl-subs{padding:8px 10px 2px 0;margin:8px 4px 0 0;border-right:2px solid var(--border)}
+.tpl-sub-item{display:flex;align-items:center;gap:6px;padding:3px 0 3px 6px}
 .tpl-sub-item input{flex:1;padding:6px 9px !important;font-size:13px !important}
 .tpl-sub-item .act-del{width:28px;height:28px;font-size:12px}
-.tpl-item-wrap{border-bottom:.5px dashed var(--border);padding-bottom:6px;margin-bottom:4px}
-.tpl-item-wrap:last-of-type{border-bottom:none}
+.tpl-item-wrap{background:var(--gray-light);border-radius:10px;padding:9px 9px 10px;margin-bottom:8px}
+.tpl-item-wrap:last-of-type{margin-bottom:0}
+.tpl-item-num{font-size:10px;font-weight:700;color:var(--text-hint);margin-bottom:6px}
 
 /* ============ متابعة الصلوات ============ */
 .pr-strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
@@ -1282,23 +1284,24 @@ function applyTemplate(tid){
 function openTemplateManager(){
   document.getElementById('modal-title').textContent='إدارة القوالب';
   let gOpts=GROUPS().map(g=>`<option value="${g.id}">${esc(g.name)}</option>`).join('');
-  let html=`<div class="text-muted" style="margin-bottom:10px">القالب مجموعة مهام جاهزة تضيفها لليوم بضغطة واحدة.</div>`;
+  let html=`<div class="text-muted" style="margin-bottom:14px">القالب مجموعة مهام جاهزة تضيفها لليوم بضغطة واحدة.</div>`;
   db.templates.forEach(tpl=>{
     html+=`<div class="mg-group">
-      <div class="mg-group-head" style="margin-bottom:8px">
-        <i class="ti ti-template" style="color:var(--teal)"></i>
+      <div class="mg-group-head">
+        <i class="ti ti-template" style="color:var(--teal);font-size:18px"></i>
         <input type="text" value="${esc(tpl.name)}" placeholder="اسم القالب" onchange="tplRename('${tpl.id}',this.value)">
         <button class="act-del" onclick="tplDelete('${tpl.id}')"><i class="ti ti-trash"></i></button>
       </div>
       ${tpl.items.map((it,i)=>`
         <div class="tpl-item-wrap">
+        <div class="tpl-item-num">مهمة ${i+1}</div>
         <div class="tpl-item">
           <select onchange="tplItemGrp('${tpl.id}',${i},this.value)">${GROUPS().map(g=>`<option value="${g.id}"${g.id===it.grp?' selected':''}>${esc(g.name)}</option>`).join('')}</select>
           <input type="text" value="${esc(it.name)}" placeholder="اسم المهمة" onchange="tplItemName('${tpl.id}',${i},this.value)">
           <button class="act-del" onclick="tplItemDelete('${tpl.id}',${i})"><i class="ti ti-x"></i></button>
         </div>
-        <div class="tpl-item" style="margin-top:4px">
-          <select style="flex:1" onchange="tplItemPeriod('${tpl.id}',${i},this.value)">
+        <div class="tpl-item" style="margin-top:8px">
+          <select style="flex:1;width:auto" onchange="tplItemPeriod('${tpl.id}',${i},this.value)">
             <option value="">فترة: تلقائي</option>
             ${PRAYER_PERIODS.map(p=>`<option value="${p.id}"${it.period===p.id?' selected':''}>فترة: ${p.label.split(' → ')[0]}</option>`).join('')}
           </select>
@@ -1309,10 +1312,10 @@ function openTemplateManager(){
             <input type="text" value="${esc(s)}" placeholder="خطوة فرعية" onchange="tplSubName('${tpl.id}',${i},${si},this.value)">
             <button class="act-del" onclick="tplSubDelete('${tpl.id}',${i},${si})"><i class="ti ti-x"></i></button>
           </div>`).join('')}
-          <button class="btn btn-sm" style="margin-top:4px" onclick="tplSubAdd('${tpl.id}',${i})"><i class="ti ti-plus"></i> خطوة فرعية</button>
+          <button class="btn btn-sm" style="margin-top:6px" onclick="tplSubAdd('${tpl.id}',${i})"><i class="ti ti-plus"></i> خطوة فرعية</button>
         </div>
         </div>`).join('')}
-      <button class="btn btn-sm" style="margin-top:6px" onclick="tplItemAdd('${tpl.id}')"><i class="ti ti-plus"></i> مهمة للقالب</button>
+      <button class="btn btn-sm" style="margin-top:2px;width:100%" onclick="tplItemAdd('${tpl.id}')"><i class="ti ti-plus"></i> مهمة للقالب</button>
     </div>`;
   });
   html+=`<button class="btn" style="width:100%" onclick="tplAdd()"><i class="ti ti-folder-plus"></i> قالب جديد</button>
